@@ -59,7 +59,8 @@ const LoginPage = () => {
       </div>
       <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md md:w-[350px]">
         <h1 className="text-2xl font-bold text-center mb-4">
-          Sistem Informasi Akademik
+          {/* Sistem Informasi Akademik  */}
+          TES
         </h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
