@@ -1,0 +1,270 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  first_name String?  @default("")
+  last_name  String?  @default("")
+  email      String   @unique
+  phone      String?  @default("")
+  address    String?  @default("")
+  img        String?  @default("")
+  blood_type Blood?   @default(A)
+  birthday   DateTime
+  sex        Sex
+  password   String
+  role       Role     @default(ADMIN)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Student {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  first_name String?  @default("")
+  last_name  String?  @default("")
+  email      String   @unique
+  phone      String?  @default("")
+  address    String?  @default("")
+  img        String?  @default("")
+  blood_type Blood?   @default(A)
+  birthday   DateTime
+  sex        Sex
+  password   String
+  role       Role     @default(STUDENT)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  parentId Int?
+  parent   Parent? @relation(fields: [parentId], references: [id], onDelete: SetNull)
+
+  classId Int
+  class   Class @relation(fields: [classId], references: [id])
+
+  gradeId Int
+  grade   Grade @relation(fields: [gradeId], references: [id])
+
+  attendances Attendance[]
+
+  results Result[]
+}
+
+model Teacher {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  first_name String?  @default("")
+  last_name  String?  @default("")
+  email      String   @unique
+  phone      String?  @default("")
+  address    String?  @default("")
+  img        String?  @default("")
+  blood_type Blood?   @default(A)
+  birthday   DateTime
+  sex        Sex
+  password   String
+  role       Role     @default(TEACHER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  attendances Attendance[]
+  subjects    Subject[]
+  lessons     Lesson[]
+  classes     Class[]
+}
+
+model Parent {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  first_name String?  @default("")
+  last_name  String?  @default("")
+  email      String   @unique
+  phone      String?  @default("")
+  address    String?  @default("")
+  img        String?  @default("")
+  blood_type Blood?   @default(A)
+  birthday   DateTime
+  sex        Sex
+
+  password   String
+  role       Role     @default(PARENT)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  students Student[]
+}
+
+model Grade {
+  id    Int @id @default(autoincrement())
+  level Int @unique
+
+  students Student[]
+  classess Class[]
+}
+
+model Class {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  capacity Int
+
+  supervisorId  Int?
+  supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
+  lessons       Lesson[]
+  students      Student[]
+  gradeId       Int
+  grade         Grade          @relation(fields: [gradeId], references: [id])
+  events        Event[]
+  announcements Announcement[]
+}
+
+model Subject {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  teachers Teacher[]
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  name      String
+  day       Day
+  startTime DateTime
+  endTime   DateTime
+
+  subjectId   Int
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  classId     Int
+  class       Class        @relation(fields: [classId], references: [id])
+  teacherId   Int
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  exams       Exam[]
+  assignments Assignment[]
+  attendances Attendance[]
+}
+
+model Exam {
+  id        Int      @id @default(autoincrement())
+  title     String
+  startTime DateTime
+  endTime   DateTime
+
+  lessonId Int
+  lesson   Lesson   @relation(fields: [lessonId], references: [id])
+  results  Result[]
+}
+
+model Assignment {
+  id        Int      @id @default(autoincrement())
+  title     String
+  startDate DateTime
+  dueDate   DateTime
+
+  lessonId Int
+  lesson   Lesson   @relation(fields: [lessonId], references: [id])
+  results  Result[]
+}
+
+model AssignmentAnswer {
+  id       Int     @id @default(autoincrement())
+  answer   String
+  fileType String
+
+  resultId Int    @unique
+  result   Result @relation(fields: [resultId], references: [id])
+}
+
+model Result {
+  id    Int @id @default(autoincrement())
+  score Int
+
+  examId       Int?
+  exam         Exam?       @relation(fields: [examId], references: [id])
+  assignmentId Int?
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+  studentId    Int
+  student      Student     @relation(fields: [studentId], references: [id])
+  
+  answer AssignmentAnswer?
+
+  @@unique([assignmentId, studentId])
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  present   Boolean
+  teacherId Int?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  studentId Int?
+  student   Student? @relation(fields: [studentId], references: [id])
+  lessonId  Int
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  startTime   DateTime
+  endTime     DateTime
+
+  classId Int?
+  class   Class? @relation(fields: [classId], references: [id])
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+
+  classId Int?
+  class   Class? @relation(fields: [classId], references: [id])
+}
+
+model Finance {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+  amount      Int
+  type        Type     @default(EXPENSE)
+}
+
+enum Type {
+  INCOME
+  EXPENSE
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}
+
+enum Blood {
+  A
+  B
+  AB
+  O
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
