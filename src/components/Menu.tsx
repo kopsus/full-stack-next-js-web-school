@@ -32,16 +32,16 @@ const menuItems = [
         visible: ["ADMIN", "TEACHER"],
       },
       {
-        icon: "/subject.png",
-        label: "Mata Pelajaran",
-        href: "/list/subjects",
-        visible: ["ADMIN"],
-      },
-      {
         icon: "/class.png",
         label: "Kelas",
         href: "/list/classes",
         visible: ["ADMIN", "TEACHER"],
+      },
+      {
+        icon: "/subject.png",
+        label: "Mata Pelajaran",
+        href: "/list/subjects",
+        visible: ["ADMIN"],
       },
       {
         icon: "/lesson.png",
@@ -84,7 +84,7 @@ const menuItems = [
         label: "Pengumuman",
         href: "/list/announcements",
         visible: ["ADMIN", "TEACHER", "STUDENT", "PARENT"],
-      }
+      },
     ],
   },
   {
@@ -96,18 +96,6 @@ const menuItems = [
         href: "/profile",
         visible: ["ADMIN", "TEACHER", "STUDENT", "PARENT"],
       },
-      // {
-      //   icon: "/setting.png",
-      //   label: "Settings",
-      //   href: "/settings",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
-      // {
-      //   icon: "/logout.png",
-      //   label: "Logout",
-      //   href: "/logout",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
     ],
   },
 ];
