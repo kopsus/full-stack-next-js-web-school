@@ -9,7 +9,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +24,7 @@ import { toast } from "react-toastify";
 import { createLesson } from "@/lib/actions/lesson";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { Teacher, Class } from "@prisma/client";
+import { Teacher, Class, Subject } from "@prisma/client";
 import { useState } from "react";
 import { lessonSchema } from "@/lib/formValidationSchemas/lesson";
 import type { LessonSchema } from "@/lib/formValidationSchemas/lesson";
@@ -30,10 +37,18 @@ import {
 } from "@/components/ui/select";
 import dayjs from "dayjs";
 
-export default function ButtonCreateLesson({ teachers, classes }: { teachers: Teacher[], classes: Class[] }) {
+export default function ButtonCreateLesson({
+  teachers,
+  classes,
+  subjects,
+}: {
+  teachers: Teacher[];
+  classes: Class[];
+  subjects: Subject[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  
+
   const form = useForm<LessonSchema>({
     resolver: zodResolver(lessonSchema),
     defaultValues: {
@@ -72,7 +87,8 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
         <AlertDialogHeader>
           <AlertDialogTitle>Tambah Pelajaran</AlertDialogTitle>
           <AlertDialogDescription className="hidden">
-            Isi formulir berikut untuk menambahkan pelajaran baru. Pastikan semua data yang dimasukkan sudah benar.
+            Isi formulir berikut untuk menambahkan pelajaran baru. Pastikan
+            semua data yang dimasukkan sudah benar.
           </AlertDialogDescription>
           <div className="mt-4">
             <Form {...form}>
@@ -81,14 +97,18 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                 className="flex flex-col gap-2 text-left"
               >
                 <div className="mb-1">
-                  <h2 className="text-lg font-semibold text-gray-900">Informasi Pelajaran</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Informasi Pelajaran
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <FormField
                       control={form.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Nama Pelajaran</FormLabel>
+                          <FormLabel className="text-gray-700 text-left">
+                            Nama Pelajaran
+                          </FormLabel>
                           <FormControl>
                             <Input
                               className="border-gray-300 focus:border-blue-500"
@@ -106,8 +126,13 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                       name="subjectId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Mata Pelajaran</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                          <FormLabel className="text-gray-700 text-left">
+                            Mata Pelajaran
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value?.toString()}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Pilih Mata Pelajaran" />
@@ -115,8 +140,14 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                             </FormControl>
                             <SelectContent className="max-h-40 overflow-y-auto">
                               {/* TODO: Add subjects data */}
-                              <SelectItem value="1">Matematika</SelectItem>
-                              <SelectItem value="2">Bahasa Indonesia</SelectItem>
+                              {subjects.map((item) => (
+                                <SelectItem
+                                  key={item.id}
+                                  value={item.id.toString()}
+                                >
+                                  {item.name}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage className="text-left" />
@@ -129,8 +160,13 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                       name="teacherId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Guru</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                          <FormLabel className="text-gray-700 text-left">
+                            Guru
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value?.toString()}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Pilih Guru" />
@@ -138,7 +174,10 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                             </FormControl>
                             <SelectContent className="max-h-40 overflow-y-auto">
                               {teachers.map((teacher) => (
-                                <SelectItem key={teacher.id} value={teacher.id.toString()}>
+                                <SelectItem
+                                  key={teacher.id}
+                                  value={teacher.id.toString()}
+                                >
                                   {teacher.first_name} {teacher.last_name}
                                 </SelectItem>
                               ))}
@@ -154,8 +193,13 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                       name="classId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Kelas</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                          <FormLabel className="text-gray-700 text-left">
+                            Kelas
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value?.toString()}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Pilih Kelas" />
@@ -163,7 +207,10 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                             </FormControl>
                             <SelectContent className="max-h-56 overflow-y-auto">
                               {classes.map((class_) => (
-                                <SelectItem key={class_.id} value={class_.id.toString()}>
+                                <SelectItem
+                                  key={class_.id}
+                                  value={class_.id.toString()}
+                                >
                                   {class_.name}
                                 </SelectItem>
                               ))}
@@ -177,15 +224,22 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                 </div>
 
                 <div className="">
-                  <h2 className="text-lg font-semibold text-gray-900">Jadwal</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Jadwal
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <FormField
                       control={form.control}
                       name="day"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Hari</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormLabel className="text-gray-700 text-left">
+                            Hari
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Pilih Hari" />
@@ -209,17 +263,27 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
                       name="startTime"
                       render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Waktu Mulai</FormLabel>
+                          <FormLabel className="text-gray-700 text-left">
+                            Waktu Mulai
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="time"
                               className="border-gray-300 focus:border-blue-500"
                               {...field}
-                              value={value instanceof Date ? dayjs(value).format('HH:mm') : ''}
+                              value={
+                                value instanceof Date
+                                  ? dayjs(value).format("HH:mm")
+                                  : ""
+                              }
                               onChange={(e) => {
-                                const [hours, minutes] = e.target.value.split(':');
+                                const [hours, minutes] =
+                                  e.target.value.split(":");
                                 const newDate = new Date();
-                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                newDate.setHours(
+                                  parseInt(hours),
+                                  parseInt(minutes)
+                                );
                                 onChange(newDate);
                               }}
                             />
@@ -231,20 +295,30 @@ export default function ButtonCreateLesson({ teachers, classes }: { teachers: Te
 
                     <FormField
                       control={form.control}
-                      name="endTime" 
+                      name="endTime"
                       render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 text-left">Waktu Selesai</FormLabel>
+                          <FormLabel className="text-gray-700 text-left">
+                            Waktu Selesai
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="time"
                               className="border-gray-300 focus:border-blue-500"
                               {...field}
-                              value={value instanceof Date ? dayjs(value).format('HH:mm') : ''}
+                              value={
+                                value instanceof Date
+                                  ? dayjs(value).format("HH:mm")
+                                  : ""
+                              }
                               onChange={(e) => {
-                                const [hours, minutes] = e.target.value.split(':');
+                                const [hours, minutes] =
+                                  e.target.value.split(":");
                                 const newDate = new Date();
-                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                newDate.setHours(
+                                  parseInt(hours),
+                                  parseInt(minutes)
+                                );
                                 onChange(newDate);
                               }}
                             />

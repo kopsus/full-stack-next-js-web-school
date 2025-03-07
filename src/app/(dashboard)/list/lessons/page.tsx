@@ -48,6 +48,7 @@ const LessonListPage = async () => {
 
   const allTeachers = await prisma.teacher.findMany();
   const allClasses = await prisma.class.findMany();
+  const allSubjects = await prisma.subject.findMany();
 
   const data = {
     lessons: lessons.map((lessonItem) => ({
@@ -64,7 +65,11 @@ const LessonListPage = async () => {
         <h1 className="text-lg font-semibold">Data Pelajaran</h1>
         {role === "ADMIN" ||
           (role === "TEACHER" && (
-            <ButtonCreateLesson teachers={allTeachers} classes={allClasses} />
+            <ButtonCreateLesson
+              teachers={allTeachers}
+              classes={allClasses}
+              subjects={allSubjects}
+            />
           ))}
       </div>
       {/* table */}
