@@ -251,6 +251,7 @@ export default function ButtonCreateLesson({
                               <SelectItem value="WEDNESDAY">Rabu</SelectItem>
                               <SelectItem value="THURSDAY">Kamis</SelectItem>
                               <SelectItem value="FRIDAY">Jumat</SelectItem>
+                              <SelectItem value="SATURDAY">Sabtu</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage className="text-left" />
