@@ -9,7 +9,6 @@ import { DataTable } from "./data-table";
 import { Prisma, Role } from "@prisma/client";
 
 const LessonListPage = async () => {
-
   const session = await decrypt(cookies().get("session")?.value);
 
   if (!session) {
@@ -30,7 +29,7 @@ const LessonListPage = async () => {
       teacher: true,
       subject: true,
     },
-  }
+  };
 
   const queryAdmin = {
     orderBy: {
@@ -41,7 +40,7 @@ const LessonListPage = async () => {
       teacher: true,
       subject: true,
     },
-  }
+  };
 
   const lessons = await prisma.lesson.findMany({
     ...(role === "ADMIN" ? queryAdmin : queryTacher),
@@ -55,17 +54,18 @@ const LessonListPage = async () => {
       ...lessonItem,
       allTeachers: allTeachers,
       allClasses: allClasses,
-      roleLogin: role as Role
+      roleLogin: role as Role,
     })),
-  }
+  };
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4">
         <h1 className="text-lg font-semibold">Data Pelajaran</h1>
-        {(role === "ADMIN") && (
-          <ButtonCreateLesson teachers={allTeachers} classes={allClasses} />
-        )}
+        {role === "ADMIN" ||
+          (role === "TEACHER" && (
+            <ButtonCreateLesson teachers={allTeachers} classes={allClasses} />
+          ))}
       </div>
       {/* table */}
       <DataTable columns={columns} data={data.lessons} />
