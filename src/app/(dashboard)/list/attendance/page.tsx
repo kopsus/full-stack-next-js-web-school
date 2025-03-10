@@ -19,18 +19,18 @@ const AttendanceListPage = async () => {
   const queryTeacher = {
     where: {
       studentId: {
-        not: null
+        not: null,
       },
       OR: [
         {
-          teacherId: Number(session.id)
+          teacherId: Number(session.id),
         },
         {
           lesson: {
-            teacherId: Number(session.id)
-          }
-        }
-      ]
+            teacherId: Number(session.id),
+          },
+        },
+      ],
     },
     include: {
       student: {
@@ -47,7 +47,7 @@ const AttendanceListPage = async () => {
       },
     },
     orderBy: {
-      id: Prisma.SortOrder.desc
+      id: Prisma.SortOrder.desc,
     },
   };
 
@@ -67,13 +67,13 @@ const AttendanceListPage = async () => {
       },
     },
     orderBy: {
-      id: Prisma.SortOrder.desc
+      id: Prisma.SortOrder.desc,
     },
   };
 
   const queryStudent = {
     where: {
-      studentId: Number(session.id)
+      studentId: Number(session.id),
     },
     include: {
       student: {
@@ -90,15 +90,15 @@ const AttendanceListPage = async () => {
       },
     },
     orderBy: {
-      id: Prisma.SortOrder.desc
+      id: Prisma.SortOrder.desc,
     },
   };
 
   const queryParent = {
     where: {
       student: {
-        parentId: Number(session.id)
-      }
+        parentId: Number(session.id),
+      },
     },
     include: {
       student: {
@@ -115,18 +115,18 @@ const AttendanceListPage = async () => {
       },
     },
     orderBy: {
-      id: Prisma.SortOrder.desc
+      id: Prisma.SortOrder.desc,
     },
   };
 
   const attendance = await prisma.attendance.findMany(
-    role === "ADMIN" 
-      ? queryAdmin 
+    role === "ADMIN"
+      ? queryAdmin
       : role === "TEACHER"
-        ? queryTeacher
-        : role === "PARENT"
-          ? queryParent
-          : queryStudent
+      ? queryTeacher
+      : role === "PARENT"
+      ? queryParent
+      : queryStudent
   );
 
   const allStudents = await prisma.student.findMany({
@@ -138,7 +138,7 @@ const AttendanceListPage = async () => {
   const allTeachers = await prisma.teacher.findMany();
   const allLessons = await prisma.lesson.findMany();
 
-  const formattedAttendance = attendance.map(item => ({
+  const formattedAttendance = attendance.map((item) => ({
     attendance: item,
     allStudents,
     allTeachers,
@@ -151,7 +151,12 @@ const AttendanceListPage = async () => {
       <div className="flex flex-col md:flex-row justify-between gap-2 md:items-center mb-2">
         <h1 className="text-sm md:text-lg font-semibold">Data Kehadiran</h1>
         {(role === "ADMIN" || role === "TEACHER") && (
-          <ButtonCreateAttendance allStudents={allStudents} allTeachers={allTeachers} allLessons={allLessons} roleLogin={role} />
+          <ButtonCreateAttendance
+            allStudents={allStudents}
+            allTeachers={allTeachers}
+            allLessons={allLessons}
+            roleLogin={role}
+          />
         )}
       </div>
       {/* table */}

@@ -1,15 +1,22 @@
 "use client";
 
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,382 +27,534 @@ import { useState, useEffect } from "react";
 import { attendanceSchema } from "@/lib/formValidationSchemas/attandance";
 import type { AttendanceSchema } from "@/lib/formValidationSchemas/attandance";
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import dayjs from "dayjs";
 import { Label } from "@/components/ui/label";
-import { Student, Teacher, Lesson, Role, Class, Attendance } from "@prisma/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Student,
+  Teacher,
+  Lesson,
+  Role,
+  Class,
+  Attendance,
+} from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { createAttendance } from "@/lib/actions/attendance";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ButtonCreateAttendanceProps {
-    allStudents: (Student & { class: Class, attendances: Attendance[] })[];
-    allTeachers: Teacher[];
-    allLessons: Lesson[];
-    roleLogin: Role;
+  allStudents: (Student & { class: Class; attendances: Attendance[] })[];
+  allTeachers: Teacher[];
+  allLessons: Lesson[];
+  roleLogin: Role;
 }
 
-export default function ButtonCreateAttendance({ allStudents, allTeachers, allLessons, roleLogin }: ButtonCreateAttendanceProps) {
-    const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const form = useForm<AttendanceSchema>({
-        resolver: zodResolver(attendanceSchema),
-        defaultValues: {
-            date: new Date(),
-            lessonId: 0,
-            studentId: 1,
-            teacherId: 1,
-            present: true,
-        },
-    });
+export default function ButtonCreateAttendance({
+  allStudents,
+  allTeachers,
+  allLessons,
+  roleLogin,
+}: ButtonCreateAttendanceProps) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const form = useForm<AttendanceSchema>({
+    resolver: zodResolver(attendanceSchema),
+    defaultValues: {
+      date: new Date(),
+      lessonId: 0,
+      studentId: 1,
+      teacherId: 1,
+      present: "HADIR",
+      information: "",
+    },
+  });
 
-    const [selectedType, setSelectedType] = useState<"teacher" | "student">(roleLogin === "ADMIN" ? "teacher" : "student");
-    const [selectedTeacher, setSelectedTeacher] = useState("");
-    const [selectedStudent, setSelectedStudent] = useState("");
-    const [selectedLesson, setSelectedLesson] = useState("");
-    const [selectedClass, setSelectedClass] = useState("");
-    const [filteredStudents, setFilteredStudents] = useState<(Student & { class: Class, attendances: Attendance[] })[]>(allStudents);
-    const [filteredLessons, setFilteredLessons] = useState<Lesson[]>(allLessons);
-
-    // Get unique classes from students
-    const uniqueClasses = Array.from(new Set(allStudents.map(student => student.class.name)));
-
-    const isSubmitting = form.formState.isSubmitting;
-
-    useEffect(() => {
-        const selectedDate = form.getValues("date");
-        const selectedLessonId = form.getValues("lessonId");
-
-        if (selectedClass) {
-            // Filter students by class and check if they haven't attended for selected date and lesson
-            setFilteredStudents(allStudents.filter(student => {
-                const hasAttendance = student.attendances.some(attendance => 
-                    dayjs(attendance.date).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') && 
-                    attendance.lessonId === selectedLessonId
-                );
-                return student.class.name === selectedClass && !hasAttendance;
-            }));
-        } else {
-            setFilteredStudents(allStudents.filter(student => {
-                const hasAttendance = student.attendances.some(attendance => 
-                    dayjs(attendance.date).format('YYYY-MM-DD') === dayjs(selectedDate).format('YYYY-MM-DD') && 
-                    attendance.lessonId === selectedLessonId
-                );
-                return !hasAttendance;
-            }));
-        }
-    }, [selectedClass, allStudents, form.watch("date"), form.watch("lessonId")]);
-
-    useEffect(() => {
-        if (selectedType === "student") {
-            const selectedStudentData = filteredStudents.find(s => s.first_name + " " + s.last_name === selectedStudent);
-            if (selectedStudentData) {
-                setFilteredLessons(allLessons.filter(lesson => lesson.classId === selectedStudentData.classId));
-            }
-        } else if (selectedType === "teacher") {
-            const teacherId = allTeachers.find(t => t.first_name + " " + t.last_name === selectedTeacher)?.id;
-            setFilteredLessons(allLessons.filter(lesson => lesson.teacherId === teacherId));
-        } else {
-            setFilteredLessons(allLessons);
-        }
-    }, [filteredStudents, selectedType, allLessons, selectedTeacher, selectedStudent, allTeachers]);
-
-    useEffect(() => {
-        setSelectedTeacher("");
-        setSelectedStudent("");
-        setSelectedLesson("");
-        setSelectedClass("");
-    }, [selectedType]);
-
-    async function onSubmit(values: AttendanceSchema) {
-        const formattedValues = {
-            date: new Date(values.date),
-            lessonId: values.lessonId,
-            studentId: selectedType === "student" ? values.studentId : null,
-            teacherId: selectedType === "teacher" ? values.teacherId : null,
-            present: values.present,
-        };
-        const result = await createAttendance(formattedValues);
-        if (result.success) {
-            setSelectedType(roleLogin === "ADMIN" ? "teacher" : "student");
-            setSelectedTeacher("");
-            setSelectedStudent("");
-            setSelectedLesson("");
-            setSelectedClass("");
-            toast.success(result.success.message);
-            setOpen(false);
-            router.push("/list/attendance");
-        } else if (result.error) {
-            toast.error(result.error.message);
-        }
-    }
-
-    const handleTeacherSelect = (currentValue: string) => {
-        const selectedTeacherData = allTeachers.find(t => t.id.toString() === currentValue);
-        setSelectedTeacher(selectedTeacherData ? `${selectedTeacherData.first_name} ${selectedTeacherData.last_name}` : "");
-        form.setValue("teacherId", parseInt(currentValue));
-        setFilteredLessons(allLessons.filter(lesson => lesson.teacherId === selectedTeacherData?.id));
-        setSelectedLesson("");
-    };
-
-    const handleStudentSelect = (currentValue: string) => {
-        const selectedStudentData = filteredStudents.find(s => s.id.toString() === currentValue);
-        setSelectedStudent(selectedStudentData ? `${selectedStudentData.first_name} ${selectedStudentData.last_name}` : "");
-        form.setValue("studentId", parseInt(currentValue));
-        setFilteredLessons(allLessons.filter(lesson => lesson.classId === selectedStudentData?.classId));
-        setSelectedLesson("");
-    };
-
-    return (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Tambah Kehadiran
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="max-w-4xl">
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Tambah Kehadiran</AlertDialogTitle>
-                    <AlertDialogDescription className="hidden">
-                        Isi formulir berikut untuk menambahkan kehadiran baru. Pastikan semua data yang dimasukkan sudah benar.
-                    </AlertDialogDescription>
-                    <div className="mt-4">
-                        <Form {...form}>
-                            <form
-                                onSubmit={form.handleSubmit(onSubmit)}
-                                className="flex flex-col gap-2"
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mb-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="date"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Tanggal</FormLabel>
-                                                <FormControl>
-                                                    <Input type="date" {...field} value={dayjs(field.value).format("YYYY-MM-DD")} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="present"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Kehadiran</FormLabel>
-                                                <FormControl>
-                                                    <Select
-                                                        value={field.value ? "Hadir" : "Tidak Hadir"}
-                                                        onValueChange={(value) => field.onChange(value === "Hadir")}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Pilih Kehadiran" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="Hadir">Hadir</SelectItem>
-                                                            <SelectItem value="Tidak Hadir">Tidak Hadir</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    {roleLogin === "ADMIN" && (
-                                        <div className="flex flex-col gap-2 mt-[6px]">
-                                            <Label>Kehadiran untuk</Label>
-                                            <Select
-                                                value={selectedType}
-                                                onValueChange={(value) => setSelectedType(value as "teacher" | "student")}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Kehadiran untuk" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="teacher">Guru</SelectItem>
-                                                    <SelectItem value="student">Siswa</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    )}
-
-                                    {(selectedType === "student" || roleLogin === "TEACHER") && (
-                                        <div className="flex flex-col gap-2 mt-[6px]">
-                                            <Label>Kelas</Label>
-                                            <Select
-                                                value={selectedClass}
-                                                onValueChange={(value) => {
-                                                    setSelectedClass(value);
-                                                    setSelectedStudent("");
-                                                }}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Pilih Kelas" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {uniqueClasses.map((className) => (
-                                                        <SelectItem key={className} value={className}>
-                                                            {className}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    )}
-
-                                    <div className="flex flex-col gap-2 mt-[6px]">
-                                        <Label>{selectedType === "teacher" ? "Nama Guru" : "Nama Siswa"}</Label>
-                                        {selectedType === "teacher" && roleLogin === "ADMIN" && (
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button variant="outline" className="w-full">
-                                                        {selectedTeacher ? `${selectedTeacher}` : "Pilih Guru..."}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[200px] p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Cari Guru..." className="h-9" />
-                                                        <CommandList>
-                                                            <CommandEmpty>Tidak ada guru ditemukan.</CommandEmpty>
-                                                            <CommandGroup>
-                                                                {allTeachers.map((teacher) => (
-                                                                    <CommandItem
-                                                                        key={teacher.id}
-                                                                        value={teacher.id.toString()}
-                                                                        onSelect={handleTeacherSelect}
-                                                                    >
-                                                                        {selectedTeacher === `${teacher.first_name} ${teacher.last_name}` ? `${selectedTeacher}` : `${teacher.first_name} ${teacher.last_name}`}
-                                                                        <Check
-                                                                            className={cn(
-                                                                                "ml-auto",
-                                                                                selectedTeacher === `${teacher.first_name} ${teacher.last_name}` ? "opacity-100" : "opacity-0"
-                                                                            )}
-                                                                        />
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
-                                        )}
-                                        {(selectedType === "student" || roleLogin === "TEACHER") && (
-                                            <>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button variant="outline" className="w-full" disabled={!selectedClass}>
-                                                            {selectedStudent ? `${selectedStudent}` : "Pilih Siswa..."}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-[200px] p-0">
-                                                        <Command>
-                                                            <CommandInput placeholder="Cari Siswa..." className="h-9" />
-                                                            <CommandList>
-                                                                <CommandEmpty>Tidak ada siswa ditemukan.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {filteredStudents.map((student) => (
-                                                                        <CommandItem
-                                                                            key={student.id}
-                                                                            value={student.id.toString()}
-                                                                            onSelect={handleStudentSelect}
-                                                                        >
-                                                                            {`${student.first_name} ${student.last_name}`}
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "ml-auto",
-                                                                                    selectedStudent === `${student.first_name} ${student.last_name}` ? "opacity-100" : "opacity-0"
-                                                                                )}
-                                                                            />
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </CommandList>
-                                                        </Command>
-                                                    </PopoverContent>
-                                                </Popover>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <Label>Pelajaran</Label>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button variant="outline" className="w-full">
-                                                    {selectedLesson ? `${selectedLesson}` : "Pilih Pelajaran..."}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Cari Pelajaran..." className="h-9" />
-                                                    <CommandList>
-                                                        <CommandEmpty>Tidak ada pelajaran ditemukan.</CommandEmpty>
-                                                        <CommandGroup>
-                                                            {filteredLessons.map((lesson) => (
-                                                                <CommandItem
-                                                                    key={lesson.id}
-                                                                    value={lesson.id.toString()}
-                                                                    onSelect={(currentValue) => {
-                                                                        const selectedLessonData = filteredLessons.find(l => l.id.toString() === currentValue);
-                                                                        setSelectedLesson(selectedLessonData ? `${selectedLessonData.name}` : "");
-                                                                        form.setValue("lessonId", parseInt(currentValue));
-                                                                    }}
-                                                                >
-                                                                    {selectedLesson === lesson.name ? `${selectedLesson}` : `${lesson.name}`}
-                                                                    <Check
-                                                                        className={cn(
-                                                                            "ml-auto",
-                                                                            selectedLesson === lesson.name ? "opacity-100" : "opacity-0"
-                                                                        )}
-                                                                    />
-                                                                </CommandItem>
-                                                            ))}
-                                                        </CommandGroup>
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end gap-4">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            form.reset();
-                                            setOpen(false);
-                                        }}
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-6"
-                                    >
-                                        {isSubmitting ? "Menyimpan..." : "Simpan"}
-                                    </Button>
-                                </div>
-                            </form>
-                        </Form>
-                    </div>
-                </AlertDialogHeader>
-            </AlertDialogContent>
-        </AlertDialog >
+  const [selectedType, setSelectedType] = useState<"teacher" | "student">(
+    roleLogin === "ADMIN" ? "teacher" : "student"
+  );
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedLesson, setSelectedLesson] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [filteredStudents, setFilteredStudents] =
+    useState<(Student & { class: Class; attendances: Attendance[] })[]>(
+      allStudents
     );
+  const [filteredLessons, setFilteredLessons] = useState<Lesson[]>(allLessons);
+
+  // Get unique classes from students
+  const uniqueClasses = Array.from(
+    new Set(allStudents.map((student) => student.class.name))
+  );
+
+  const isSubmitting = form.formState.isSubmitting;
+
+  useEffect(() => {
+    const selectedDate = form.getValues("date");
+    const selectedLessonId = form.getValues("lessonId");
+
+    if (selectedClass) {
+      // Filter students by class and check if they haven't attended for selected date and lesson
+      setFilteredStudents(
+        allStudents.filter((student) => {
+          const hasAttendance = student.attendances.some(
+            (attendance) =>
+              dayjs(attendance.date).format("YYYY-MM-DD") ===
+                dayjs(selectedDate).format("YYYY-MM-DD") &&
+              attendance.lessonId === selectedLessonId
+          );
+          return student.class.name === selectedClass && !hasAttendance;
+        })
+      );
+    } else {
+      setFilteredStudents(
+        allStudents.filter((student) => {
+          const hasAttendance = student.attendances.some(
+            (attendance) =>
+              dayjs(attendance.date).format("YYYY-MM-DD") ===
+                dayjs(selectedDate).format("YYYY-MM-DD") &&
+              attendance.lessonId === selectedLessonId
+          );
+          return !hasAttendance;
+        })
+      );
+    }
+  }, [selectedClass, allStudents, form]);
+
+  useEffect(() => {
+    if (selectedType === "student") {
+      const selectedStudentData = filteredStudents.find(
+        (s) => s.first_name + " " + s.last_name === selectedStudent
+      );
+      if (selectedStudentData) {
+        setFilteredLessons(
+          allLessons.filter(
+            (lesson) => lesson.classId === selectedStudentData.classId
+          )
+        );
+      }
+    } else if (selectedType === "teacher") {
+      const teacherId = allTeachers.find(
+        (t) => t.first_name + " " + t.last_name === selectedTeacher
+      )?.id;
+      setFilteredLessons(
+        allLessons.filter((lesson) => lesson.teacherId === teacherId)
+      );
+    } else {
+      setFilteredLessons(allLessons);
+    }
+  }, [
+    filteredStudents,
+    selectedType,
+    allLessons,
+    selectedTeacher,
+    selectedStudent,
+    allTeachers,
+  ]);
+
+  useEffect(() => {
+    setSelectedTeacher("");
+    setSelectedStudent("");
+    setSelectedLesson("");
+    setSelectedClass("");
+  }, [selectedType]);
+
+  async function onSubmit(values: AttendanceSchema) {
+    const formattedValues = {
+      date: new Date(values.date),
+      lessonId: values.lessonId,
+      studentId: selectedType === "student" ? values.studentId : null,
+      teacherId: selectedType === "teacher" ? values.teacherId : null,
+      present: values.present,
+      information: values.information,
+    };
+    const result = await createAttendance(formattedValues);
+    if (result.success) {
+      setSelectedType(roleLogin === "ADMIN" ? "teacher" : "student");
+      setSelectedTeacher("");
+      setSelectedStudent("");
+      setSelectedLesson("");
+      setSelectedClass("");
+      toast.success(result.success.message);
+      setOpen(false);
+      router.push("/list/attendance");
+    } else if (result.error) {
+      toast.error(result.error.message);
+    }
+  }
+
+  const handleTeacherSelect = (currentValue: string) => {
+    const selectedTeacherData = allTeachers.find(
+      (t) => t.id.toString() === currentValue
+    );
+    setSelectedTeacher(
+      selectedTeacherData
+        ? `${selectedTeacherData.first_name} ${selectedTeacherData.last_name}`
+        : ""
+    );
+    form.setValue("teacherId", parseInt(currentValue));
+    setFilteredLessons(
+      allLessons.filter(
+        (lesson) => lesson.teacherId === selectedTeacherData?.id
+      )
+    );
+    setSelectedLesson("");
+  };
+
+  const handleStudentSelect = (currentValue: string) => {
+    const selectedStudentData = filteredStudents.find(
+      (s) => s.id.toString() === currentValue
+    );
+    setSelectedStudent(
+      selectedStudentData
+        ? `${selectedStudentData.first_name} ${selectedStudentData.last_name}`
+        : ""
+    );
+    form.setValue("studentId", parseInt(currentValue));
+    setFilteredLessons(
+      allLessons.filter(
+        (lesson) => lesson.classId === selectedStudentData?.classId
+      )
+    );
+    setSelectedLesson("");
+  };
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Tambah Kehadiran
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-4xl">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Tambah Kehadiran</AlertDialogTitle>
+          <AlertDialogDescription className="hidden">
+            Isi formulir berikut untuk menambahkan kehadiran baru. Pastikan
+            semua data yang dimasukkan sudah benar.
+          </AlertDialogDescription>
+          <div className="mt-4">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-2"
+              >
+                <div className="grid grid-cols-1 items-center md:grid-cols-3 gap-4 text-left mb-2">
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tanggal</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            {...field}
+                            value={dayjs(field.value).format("YYYY-MM-DD")}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="present"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kehadiran</FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Pilih Kehadiran" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="HADIR">Hadir</SelectItem>
+                              <SelectItem value="ALFA">Tidak Hadir</SelectItem>
+                              <SelectItem value="PERMISSION">Izin</SelectItem>
+                              <SelectItem value="SICK">Sakit</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {roleLogin === "ADMIN" && (
+                    <div className="flex flex-col gap-2">
+                      <Label className="mb-1">Kehadiran untuk</Label>
+                      <Select
+                        value={selectedType}
+                        onValueChange={(value) =>
+                          setSelectedType(value as "teacher" | "student")
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Kehadiran untuk" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="teacher">Guru</SelectItem>
+                          <SelectItem value="student">Siswa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {(selectedType === "student" || roleLogin === "TEACHER") && (
+                    <div className="flex flex-col gap-2">
+                      <Label>Kelas</Label>
+                      <Select
+                        value={selectedClass}
+                        onValueChange={(value) => {
+                          setSelectedClass(value);
+                          setSelectedStudent("");
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih Kelas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {uniqueClasses.map((className) => (
+                            <SelectItem key={className} value={className}>
+                              {className}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-2">
+                    <Label>
+                      {selectedType === "teacher" ? "Nama Guru" : "Nama Siswa"}
+                    </Label>
+                    {selectedType === "teacher" && roleLogin === "ADMIN" && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full">
+                            {selectedTeacher
+                              ? `${selectedTeacher}`
+                              : "Pilih Guru..."}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Cari Guru..."
+                              className="h-9"
+                            />
+                            <CommandList>
+                              <CommandEmpty>
+                                Tidak ada guru ditemukan.
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {allTeachers.map((teacher) => (
+                                  <CommandItem
+                                    key={teacher.id}
+                                    value={teacher.id.toString()}
+                                    onSelect={handleTeacherSelect}
+                                  >
+                                    {selectedTeacher ===
+                                    `${teacher.first_name} ${teacher.last_name}`
+                                      ? `${selectedTeacher}`
+                                      : `${teacher.first_name} ${teacher.last_name}`}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        selectedTeacher ===
+                                          `${teacher.first_name} ${teacher.last_name}`
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                    {(selectedType === "student" ||
+                      roleLogin === "TEACHER") && (
+                      <>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              disabled={!selectedClass}
+                            >
+                              {selectedStudent
+                                ? `${selectedStudent}`
+                                : "Pilih Siswa..."}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Cari Siswa..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>
+                                  Tidak ada siswa ditemukan.
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {filteredStudents.map((student) => (
+                                    <CommandItem
+                                      key={student.id}
+                                      value={student.id.toString()}
+                                      onSelect={handleStudentSelect}
+                                    >
+                                      {`${student.first_name} ${student.last_name}`}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          selectedStudent ===
+                                            `${student.first_name} ${student.last_name}`
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label>Pelajaran</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                          {selectedLesson
+                            ? `${selectedLesson}`
+                            : "Pilih Pelajaran..."}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Cari Pelajaran..."
+                            className="h-9"
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              Tidak ada pelajaran ditemukan.
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {filteredLessons.map((lesson) => (
+                                <CommandItem
+                                  key={lesson.id}
+                                  value={lesson.id.toString()}
+                                  onSelect={(currentValue) => {
+                                    const selectedLessonData =
+                                      filteredLessons.find(
+                                        (l) => l.id.toString() === currentValue
+                                      );
+                                    setSelectedLesson(
+                                      selectedLessonData
+                                        ? `${selectedLessonData.name}`
+                                        : ""
+                                    );
+                                    form.setValue(
+                                      "lessonId",
+                                      parseInt(currentValue)
+                                    );
+                                  }}
+                                >
+                                  {selectedLesson === lesson.name
+                                    ? `${selectedLesson}`
+                                    : `${lesson.name}`}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      selectedLesson === lesson.name
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="col-span-1 md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="information"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Kehadiran</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder="Berikan keterengan"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      form.reset();
+                      setOpen(false);
+                    }}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                  >
+                    {isSubmitting ? "Menyimpan..." : "Simpan"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </AlertDialogHeader>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }
