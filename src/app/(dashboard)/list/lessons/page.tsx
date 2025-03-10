@@ -63,14 +63,13 @@ const LessonListPage = async () => {
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4">
         <h1 className="text-lg font-semibold">Data Pelajaran</h1>
-        {role === "ADMIN" ||
-          (role === "TEACHER" && (
-            <ButtonCreateLesson
-              teachers={allTeachers}
-              classes={allClasses}
-              subjects={allSubjects}
-            />
-          ))}
+        {(role === "ADMIN" || role === "TEACHER") && (
+          <ButtonCreateLesson
+            teachers={allTeachers}
+            classes={allClasses}
+            subjects={allSubjects}
+          />
+        )}
       </div>
       {/* table */}
       <DataTable columns={columns} data={data.lessons} />
