@@ -30,17 +30,17 @@ const SingleStudentPage = async ({
         include: {
           _count: {
             select: {
-              lessons: true
-            }
-          }
-        }
+              lessons: true,
+            },
+          },
+        },
       },
       parent: true,
       _count: {
         select: {
-          attendances: true
-        }
-      }
+          attendances: true,
+        },
+      },
     },
   });
 
@@ -51,7 +51,7 @@ const SingleStudentPage = async ({
   const totalAttendance = await prisma.attendance.count({
     where: {
       studentId: student.id,
-      present: true,
+      present: "HADIR",
     },
   });
 
@@ -61,7 +61,7 @@ const SingleStudentPage = async ({
     },
   });
 
-  const attendancePercentage = 
+  const attendancePercentage =
     totalLessons > 0 ? (totalAttendance / totalLessons) * 100 : 0;
 
   const calculatePerformance = (attendancePercentage: number) => {
@@ -109,9 +109,7 @@ const SingleStudentPage = async ({
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>
-                    {dayjs(student.birthday).format("DD MMMM YYYY")}
-                  </span>
+                  <span>{dayjs(student.birthday).format("DD MMMM YYYY")}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/mail.png" alt="" width={14} height={14} />
@@ -152,9 +150,7 @@ const SingleStudentPage = async ({
                 className="w-6 h-6"
               />
               <div className="">
-                <h1 className="text-xl font-semibold">
-                  {student.class.name}
-                </h1>
+                <h1 className="text-xl font-semibold">{student.class.name}</h1>
                 <span className="text-sm text-gray-400">Kelas</span>
               </div>
             </div>
@@ -194,9 +190,7 @@ const SingleStudentPage = async ({
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4">
-          <h1 className="text-xl font-semibold mb-4">
-            Jadwal Siswa
-          </h1>
+          <h1 className="text-xl font-semibold mb-4">Jadwal Siswa</h1>
           <div className="hidden md:block">
             <BigCalendarContainer type="classId" id={student.classId} />
           </div>
@@ -219,10 +213,7 @@ const SingleStudentPage = async ({
             >
               Teachers
             </Link>
-            <Link
-              className="p-3 rounded-md bg-pink-50"
-              href={`/list/exams`}
-            >
+            <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams`}>
               Exams
             </Link>
             <Link

@@ -42,7 +42,7 @@ const SingleTeacherPage = async ({
   const totalAttendance = await prisma.attendance.count({
     where: {
       teacherId: teacher?.id!,
-      present: true,
+      present: "HADIR",
     },
   });
 
@@ -104,9 +104,7 @@ const SingleTeacherPage = async ({
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>
-                    {dayjs(teacher.birthday).format("DD MMMM YYYY")}
-                  </span>
+                  <span>{dayjs(teacher.birthday).format("DD MMMM YYYY")}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/mail.png" alt="" width={14} height={14} />
@@ -195,50 +193,50 @@ const SingleTeacherPage = async ({
           <div className="hidden md:block">
             <BigCalendarContainer type="teacherId" id={teacher.id} />
           </div>
-            <div className="md:hidden space-y-4">
+          <div className="md:hidden space-y-4">
             {teacher.lessons.slice(0, 3).map((lesson) => (
               <div
-              key={lesson.id}
-              className="p-4 rounded-md bg-lamaSkyLight hover:bg-sky-100 transition-colors"
+                key={lesson.id}
+                className="p-4 rounded-md bg-lamaSkyLight hover:bg-sky-100 transition-colors"
               >
-              <div className="flex items-center justify-between mb-2">
-                <h1 className="font-semibold text-base">{lesson.name}</h1>
-                <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded">
-                {new Date(lesson.startTime).toLocaleDateString("id-ID", {
-                  weekday: "long",
-                })}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-                </svg>
-                <p className="text-sm">
-                {new Date(lesson.startTime).toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
-                -
-                {new Date(lesson.endTime).toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                </p>
-              </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h1 className="font-semibold text-base">{lesson.name}</h1>
+                  <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded">
+                    {new Date(lesson.startTime).toLocaleDateString("id-ID", {
+                      weekday: "long",
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-sm">
+                    {new Date(lesson.startTime).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    -
+                    {new Date(lesson.endTime).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
               </div>
             ))}
-            </div>
+          </div>
         </div>
       </div>
       {/* RIGHT */}
@@ -264,10 +262,7 @@ const SingleTeacherPage = async ({
             >
               Lessons
             </Link>
-            <Link
-              className="p-3 rounded-md bg-pink-50"
-              href={`/list/exams`}
-            >
+            <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams`}>
               Exams
             </Link>
             <Link

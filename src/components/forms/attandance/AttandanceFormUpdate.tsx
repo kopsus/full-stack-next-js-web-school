@@ -485,7 +485,7 @@ export default function ButtonUpdateAttendance({
 
                 <div className="flex justify-end gap-4">
                   <Button
-                    type="submit"
+                    type="button"
                     variant="outline"
                     onClick={() => {
                       form.reset();
