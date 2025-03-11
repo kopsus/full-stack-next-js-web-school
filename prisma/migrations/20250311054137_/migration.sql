@@ -1,31 +1,60 @@
 -- CreateEnum
-CREATE TYPE "UserSex" AS ENUM ('MALE', 'FEMALE');
+CREATE TYPE "Present" AS ENUM ('HADIR', 'ALFA', 'PERMISSION', 'SICK');
+
+-- CreateEnum
+CREATE TYPE "Type" AS ENUM ('INCOME', 'EXPENSE');
+
+-- CreateEnum
+CREATE TYPE "Sex" AS ENUM ('MALE', 'FEMALE');
 
 -- CreateEnum
 CREATE TYPE "Day" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY');
 
+-- CreateEnum
+CREATE TYPE "Blood" AS ENUM ('A', 'B', 'AB', 'O');
+
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'TEACHER', 'STUDENT', 'PARENT');
+
 -- CreateTable
 CREATE TABLE "Admin" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
+    "first_name" TEXT DEFAULT '',
+    "last_name" TEXT DEFAULT '',
+    "email" TEXT NOT NULL,
+    "phone" TEXT DEFAULT '',
+    "address" TEXT DEFAULT '',
+    "img" TEXT DEFAULT '',
+    "blood_type" "Blood" DEFAULT 'A',
+    "birthday" TIMESTAMP(3) NOT NULL,
+    "sex" "Sex" NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Student" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
-    "email" TEXT,
-    "phone" TEXT,
-    "address" TEXT NOT NULL,
-    "img" TEXT,
-    "bloodType" TEXT NOT NULL,
-    "sex" "UserSex" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "parentId" TEXT NOT NULL,
+    "first_name" TEXT DEFAULT '',
+    "last_name" TEXT DEFAULT '',
+    "email" TEXT NOT NULL,
+    "phone" TEXT DEFAULT '',
+    "address" TEXT DEFAULT '',
+    "img" TEXT DEFAULT '',
+    "blood_type" "Blood" DEFAULT 'A',
+    "birthday" TIMESTAMP(3) NOT NULL,
+    "sex" "Sex" NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'STUDENT',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "parentId" INTEGER,
     "classId" INTEGER NOT NULL,
     "gradeId" INTEGER NOT NULL,
 
@@ -34,31 +63,42 @@ CREATE TABLE "Student" (
 
 -- CreateTable
 CREATE TABLE "Teacher" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
-    "email" TEXT,
-    "phone" TEXT,
-    "address" TEXT NOT NULL,
-    "img" TEXT,
-    "bloodType" TEXT NOT NULL,
-    "sex" "UserSex" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "first_name" TEXT DEFAULT '',
+    "last_name" TEXT DEFAULT '',
+    "email" TEXT NOT NULL,
+    "phone" TEXT DEFAULT '',
+    "address" TEXT DEFAULT '',
+    "img" TEXT DEFAULT '',
+    "blood_type" "Blood" DEFAULT 'A',
+    "birthday" TIMESTAMP(3) NOT NULL,
+    "sex" "Sex" NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'TEACHER',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Teacher_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Parent" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
-    "email" TEXT,
-    "phone" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "first_name" TEXT DEFAULT '',
+    "last_name" TEXT DEFAULT '',
+    "email" TEXT NOT NULL,
+    "phone" TEXT DEFAULT '',
+    "address" TEXT DEFAULT '',
+    "img" TEXT DEFAULT '',
+    "blood_type" "Blood" DEFAULT 'A',
+    "birthday" TIMESTAMP(3) NOT NULL,
+    "sex" "Sex" NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'PARENT',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Parent_pkey" PRIMARY KEY ("id")
 );
@@ -76,7 +116,7 @@ CREATE TABLE "Class" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
-    "supervisorId" TEXT NOT NULL,
+    "supervisorId" INTEGER,
     "gradeId" INTEGER NOT NULL,
 
     CONSTRAINT "Class_pkey" PRIMARY KEY ("id")
@@ -99,7 +139,7 @@ CREATE TABLE "Lesson" (
     "endTime" TIMESTAMP(3) NOT NULL,
     "subjectId" INTEGER NOT NULL,
     "classId" INTEGER NOT NULL,
-    "teacherId" TEXT NOT NULL,
+    "teacherId" INTEGER NOT NULL,
 
     CONSTRAINT "Lesson_pkey" PRIMARY KEY ("id")
 );
@@ -127,12 +167,22 @@ CREATE TABLE "Assignment" (
 );
 
 -- CreateTable
+CREATE TABLE "AssignmentAnswer" (
+    "id" SERIAL NOT NULL,
+    "answer" TEXT NOT NULL,
+    "fileType" TEXT NOT NULL,
+    "resultId" INTEGER NOT NULL,
+
+    CONSTRAINT "AssignmentAnswer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Result" (
     "id" SERIAL NOT NULL,
     "score" INTEGER NOT NULL,
     "examId" INTEGER,
     "assignmentId" INTEGER,
-    "studentId" TEXT NOT NULL,
+    "studentId" INTEGER NOT NULL,
 
     CONSTRAINT "Result_pkey" PRIMARY KEY ("id")
 );
@@ -141,8 +191,10 @@ CREATE TABLE "Result" (
 CREATE TABLE "Attendance" (
     "id" SERIAL NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
-    "present" BOOLEAN NOT NULL,
-    "studentId" TEXT NOT NULL,
+    "present" "Present" NOT NULL DEFAULT 'HADIR',
+    "information" TEXT,
+    "teacherId" INTEGER,
+    "studentId" INTEGER,
     "lessonId" INTEGER NOT NULL,
 
     CONSTRAINT "Attendance_pkey" PRIMARY KEY ("id")
@@ -172,13 +224,28 @@ CREATE TABLE "Announcement" (
 );
 
 -- CreateTable
+CREATE TABLE "Finance" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "amount" INTEGER NOT NULL,
+    "type" "Type" NOT NULL DEFAULT 'EXPENSE',
+
+    CONSTRAINT "Finance_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_SubjectToTeacher" (
     "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
+    "B" INTEGER NOT NULL
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Admin_username_key" ON "Admin"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Student_username_key" ON "Student"("username");
@@ -187,25 +254,16 @@ CREATE UNIQUE INDEX "Student_username_key" ON "Student"("username");
 CREATE UNIQUE INDEX "Student_email_key" ON "Student"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Student_phone_key" ON "Student"("phone");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Teacher_username_key" ON "Teacher"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Teacher_email_key" ON "Teacher"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Teacher_phone_key" ON "Teacher"("phone");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Parent_username_key" ON "Parent"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Parent_email_key" ON "Parent"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Parent_phone_key" ON "Parent"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Grade_level_key" ON "Grade"("level");
@@ -217,13 +275,19 @@ CREATE UNIQUE INDEX "Class_name_key" ON "Class"("name");
 CREATE UNIQUE INDEX "Subject_name_key" ON "Subject"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "AssignmentAnswer_resultId_key" ON "AssignmentAnswer"("resultId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Result_assignmentId_studentId_key" ON "Result"("assignmentId", "studentId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_SubjectToTeacher_AB_unique" ON "_SubjectToTeacher"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_SubjectToTeacher_B_index" ON "_SubjectToTeacher"("B");
 
 -- AddForeignKey
-ALTER TABLE "Student" ADD CONSTRAINT "Student_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Parent"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Student" ADD CONSTRAINT "Student_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Parent"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Student" ADD CONSTRAINT "Student_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -232,7 +296,7 @@ ALTER TABLE "Student" ADD CONSTRAINT "Student_classId_fkey" FOREIGN KEY ("classI
 ALTER TABLE "Student" ADD CONSTRAINT "Student_gradeId_fkey" FOREIGN KEY ("gradeId") REFERENCES "Grade"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Class" ADD CONSTRAINT "Class_supervisorId_fkey" FOREIGN KEY ("supervisorId") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Class" ADD CONSTRAINT "Class_supervisorId_fkey" FOREIGN KEY ("supervisorId") REFERENCES "Teacher"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Class" ADD CONSTRAINT "Class_gradeId_fkey" FOREIGN KEY ("gradeId") REFERENCES "Grade"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -253,6 +317,9 @@ ALTER TABLE "Exam" ADD CONSTRAINT "Exam_lessonId_fkey" FOREIGN KEY ("lessonId") 
 ALTER TABLE "Assignment" ADD CONSTRAINT "Assignment_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "AssignmentAnswer" ADD CONSTRAINT "AssignmentAnswer_resultId_fkey" FOREIGN KEY ("resultId") REFERENCES "Result"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Result" ADD CONSTRAINT "Result_examId_fkey" FOREIGN KEY ("examId") REFERENCES "Exam"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -262,7 +329,10 @@ ALTER TABLE "Result" ADD CONSTRAINT "Result_assignmentId_fkey" FOREIGN KEY ("ass
 ALTER TABLE "Result" ADD CONSTRAINT "Result_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
