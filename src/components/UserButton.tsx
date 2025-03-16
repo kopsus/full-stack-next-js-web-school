@@ -18,7 +18,6 @@ interface UserButtonProps {
 }
 
 export default function UserButton({ dataUser }: UserButtonProps) {
-  const router = useRouter();
   const handleLogout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await logout();

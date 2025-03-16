@@ -8,7 +8,6 @@ import { DataTable } from "./data-table";
 import ButtonCreateClass from "@/components/forms/class/ClassFormCreate";
 import { Role } from "@prisma/client";
 const ClassListPage = async () => {
-
   const session = await decrypt(cookies().get("session")?.value);
 
   if (!session) {
@@ -37,7 +36,7 @@ const ClassListPage = async () => {
       allGrades: allGrades,
       roleLogin: role as Role,
     })),
-  }
+  };
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">

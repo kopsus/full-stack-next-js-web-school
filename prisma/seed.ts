@@ -7,36 +7,8 @@ async function main() {
   await Promise.all(
     [
       {
-        username: "admin1",
-        email: "admin1@sekolah.com",
-      },
-      {
-        username: "admin2",
-        email: "admin2@sekolah.com",
-      },
-      {
-        username: "admin3",
-        email: "admin3@sekolah.com",
-      },
-      {
-        username: "admin4",
-        email: "admin4@sekolah.com",
-      },
-      {
-        username: "admin5",
-        email: "admin5@sekolah.com",
-      },
-      {
-        username: "admin6",
-        email: "admin6@sekolah.com",
-      },
-      {
-        username: "admin7",
-        email: "admin7@sekolah.com",
-      },
-      {
-        username: "admin8",
-        email: "admin8@sekolah.com",
+        username: "admin",
+        email: "admin@sekolah.com",
       },
     ].map(async (admin) => {
       const password = await bcrypt.hash("admin123", 10);
