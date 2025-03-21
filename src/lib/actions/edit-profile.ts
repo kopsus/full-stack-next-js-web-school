@@ -1,6 +1,6 @@
 "use server";
 
-import { ProfileSchema, profileSchema } from "../formValidationSchemas/profile";
+import { ProfileSchema } from "../formValidationSchemas/profile";
 import prisma from "../prisma";
 import { revalidatePath } from "next/cache";
 import { responServerAction } from "./responServerActionType";

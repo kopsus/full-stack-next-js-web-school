@@ -53,7 +53,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
       subjects: [],
       classes: [],
       img: "",
-      birthday: new Date()
+      birthday: new Date(),
     },
   });
 
