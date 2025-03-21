@@ -26,9 +26,9 @@ const ProfilePage = async () => {
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row gap-8 items-center relative">
         <div className="relative w-40 h-40 group bg-slate-200 overflow-hidden">
-          {data.img ? (
+          {data?.img ? (
             <Image
-              src={`http://sia.smakstpetrusende.sch.id/uploads/${data.img}`}
+              src={`/uploads/${data?.img}`}
               alt="Profile"
               width={100}
               height={100}
