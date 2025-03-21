@@ -40,6 +40,7 @@ import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
 
 export default function ButtonEdit({ data }: { data: ProfileSchema }) {
+  const [isUploading, setIsUploading] = useState(false);
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     data.img ? `/uploads/${data.img}` : null
@@ -80,12 +81,13 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
 
   async function onSubmit(values: ProfileSchema) {
     try {
+      setIsUploading(true); // Set loading sebelum mulai upload
+
       const formData = new FormData();
       if (imageProfile) {
         formData.append("img", imageProfile as File);
       }
 
-      // Only include password in values if newPassword is set
       const submitValues = {
         username: values.username,
         first_name: values.first_name,
@@ -98,7 +100,7 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
         birthday: values.birthday,
         role: values.role,
         img: imageProfile ? imageProfile.name : values.img,
-        ...(newPassword ? { password: newPassword } : null),
+        ...(newPassword ? { password: newPassword } : {}),
       };
 
       const result = await updateProfile(
@@ -107,14 +109,21 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
         submitValues,
         formData
       );
+
       if (result.success?.status) {
         toast.success(result.success.message);
+
+        // Pastikan gambar sudah tersedia sebelum menutup dialog
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Opsional, delay 500ms untuk memastikan update selesai
+
         setOpen(false);
-      } else if (result.error?.status) {
+      } else {
         toast.error(result.error.message);
       }
     } catch (error) {
       toast.error("Failed to update profile");
+    } finally {
+      setIsUploading(false); // Reset loading state
     }
   }
 
@@ -385,8 +394,8 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
                   >
                     Batal
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+                  <Button type="submit" disabled={isUploading}>
+                    {isUploading ? "Menyimpan..." : "Simpan"}
                   </Button>
                 </div>
               </form>

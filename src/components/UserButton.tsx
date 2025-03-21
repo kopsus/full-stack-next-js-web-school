@@ -10,7 +10,6 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { LogOutIcon } from "lucide-react";
 import { Admin, Student, Parent, Teacher } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import logout from "@/lib/actions/logout";
 
 interface UserButtonProps {
@@ -36,13 +35,15 @@ export default function UserButton({ dataUser }: UserButtonProps) {
             </span>
           </div>
 
-          <Avatar className="h-8 w-8 cursor-pointer border-2 border-gray-300">
-            <AvatarImage
+          <div className="h-8 w-8 rounded-full overflow-hidden cursor-pointer border-2 border-gray-300">
+            <Image
               src={`/uploads/${dataUser.img || "/avatar.png"}`}
               alt="User avatar"
+              width={0}
+              height={0}
+              sizes="100vw"
             />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+          </div>
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-48" align="end">
