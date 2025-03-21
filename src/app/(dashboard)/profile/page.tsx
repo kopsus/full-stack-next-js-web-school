@@ -25,15 +25,16 @@ const ProfilePage = async () => {
     <div className="p-4 flex flex-col gap-4 w-full md:w-10/12 mx-auto">
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row gap-8 items-center relative">
-        <div className="relative w-40 h-40 group">
+        <div className="relative w-40 h-40 group bg-slate-200 overflow-hidden">
           {data.img ? (
             <Image
-              src={`/uploads/${data?.img}`}
+              src={`/uploads/${data.img}`}
               alt="Profile"
-              className="rounded-full object-cover border-4 border-blue-100"
+              className="block object-cover w-full h-full"
               width={0}
               height={0}
               sizes="100vw"
+              // layout="intrinsic"
             />
           ) : null}
         </div>

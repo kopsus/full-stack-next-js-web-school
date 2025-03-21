@@ -16,11 +16,10 @@ export const updateProfile = async (
   try {
     let path = null;
 
-    // Handle image upload if provided
-    const imageFile = image?.get("img") as File;
-    if (imageFile) {
-      const result = await uploadImage(image!);
-      if (result.error?.status) {
+    if (image?.get("img")) {
+      const result = await uploadImage(image);
+      if (result.error.status) {
+        console.error("Upload Gagal:", result.error.message);
         return responServerAction({
           statusSuccess: false,
           statusError: true,
@@ -28,7 +27,7 @@ export const updateProfile = async (
           data: null,
         });
       }
-      path = result.data as string;
+      path = result.data;
     }
 
     const updateData = {
@@ -47,42 +46,45 @@ export const updateProfile = async (
       updated_at: new Date(),
     };
 
-    if (role === "STUDENT") {
-      await prisma.student.update({
-        where: { id },
-        data: updateData,
-      });
-    }
-
-    if (role === "TEACHER") {
-      await prisma.teacher.update({
-        where: { id },
-        data: updateData,
-      });
-    }
-
-    if (role === "PARENT") {
-      await prisma.parent.update({
-        where: { id },
-        data: updateData,
-      });
-    }
-
-    if (role === "ADMIN") {
-      await prisma.admin.update({
-        where: { id },
-        data: updateData,
-      });
+    let updatedProfile;
+    switch (role) {
+      case "STUDENT":
+        updatedProfile = await prisma.student.update({
+          where: { id },
+          data: updateData,
+        });
+        break;
+      case "TEACHER":
+        updatedProfile = await prisma.teacher.update({
+          where: { id },
+          data: updateData,
+        });
+        break;
+      case "PARENT":
+        updatedProfile = await prisma.parent.update({
+          where: { id },
+          data: updateData,
+        });
+        break;
+      case "ADMIN":
+        updatedProfile = await prisma.admin.update({
+          where: { id },
+          data: updateData,
+        });
+        break;
+      default:
+        throw new Error("Role tidak dikenal");
     }
 
     revalidatePath("/profile");
+
     return responServerAction({
       statusSuccess: true,
       statusError: false,
       messageSuccess: "Berhasil mengubah profil",
     });
   } catch (err) {
-    console.log(err);
+    console.error("Update Profile Error:", err);
     return responServerAction({
       statusSuccess: false,
       statusError: true,
