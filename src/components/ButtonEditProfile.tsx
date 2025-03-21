@@ -112,7 +112,6 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
       if (result.success?.status) {
         toast.success(result.success.message);
         setOpen(false);
-        router.refresh();
       } else if (result.error?.status) {
         toast.error(result.error.message);
       }
