@@ -35,15 +35,10 @@ export default function UserButton({ dataUser }: UserButtonProps) {
             </span>
           </div>
 
-          <div className="h-8 w-8 rounded-full overflow-hidden cursor-pointer border-2 border-gray-300">
-            <Image
-              src={`/uploads/${dataUser.img || "/avatar.png"}`}
-              alt="User avatar"
-              width={0}
-              height={0}
-              sizes="100vw"
-            />
-          </div>
+          <Avatar className="h-8 w-8 cursor-pointer border-2 border-gray-300">
+            <AvatarImage src={`/uploads/${dataUser.img}`} alt="User avatar" />
+            <AvatarFallback>U</AvatarFallback>
+          </Avatar>
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-48" align="end">
