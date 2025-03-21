@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import { Pencil, Upload } from "lucide-react";
 import { useState } from "react";
 import {
@@ -41,7 +40,6 @@ import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
 
 export default function ButtonEdit({ data }: { data: ProfileSchema }) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     data.img ? `/uploads/${data.img}` : null

@@ -28,13 +28,11 @@ const ProfilePage = async () => {
         <div className="relative w-40 h-40 group bg-slate-200 overflow-hidden">
           {data.img ? (
             <Image
-              src={`/uploads/${data.img}`}
+              src={`http://sia.smakstpetrusende.sch.id/uploads/${data.img}`}
               alt="Profile"
+              width={100}
+              height={100}
               className="block object-cover w-full h-full"
-              width={0}
-              height={0}
-              sizes="100vw"
-              // layout="intrinsic"
             />
           ) : null}
         </div>
