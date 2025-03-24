@@ -208,7 +208,15 @@ const ButtonViewAttendance = ({ data }: { data: AttendanceWithDetails }) => {
               </div>
               <div>
                 <span className="font-semibold block">Status Kehadiran</span>
-                <span>{data.attendance.present ? "Hadir" : "Tidak Hadir"}</span>
+                <span>
+                  {data.attendance.present === "HADIR"
+                    ? "Hadir"
+                    : data.attendance.present === "ALFA"
+                    ? "Tidak Hadir"
+                    : data.attendance.present === "PERMISSION"
+                    ? "Izin"
+                    : "Sakit"}
+                </span>
               </div>
               <div>
                 <span className="font-semibold block">Mata Pelajaran</span>
