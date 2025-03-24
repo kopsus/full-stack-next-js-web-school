@@ -269,7 +269,7 @@ export default function ButtonUpdateAttendance({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="HADIR">Hadir</SelectItem>
-                              <SelectItem value="ALFA">Tidak Hadir</SelectItem>
+                              <SelectItem value="ALFA">Alpha</SelectItem>
                               <SelectItem value="PERMISSION">Izin</SelectItem>
                               <SelectItem value="SICK">Sakit</SelectItem>
                             </SelectContent>

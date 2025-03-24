@@ -81,7 +81,7 @@ export const columns: ColumnDef<AttendanceWithDetails>[] = [
           {row.original.attendance.present === "HADIR"
             ? "Hadir"
             : row.original.attendance.present === "ALFA"
-            ? "Alfa"
+            ? "Alpha"
             : row.original.attendance.present === "SICK"
             ? "Sakit"
             : "Izin"}
@@ -212,7 +212,7 @@ const ButtonViewAttendance = ({ data }: { data: AttendanceWithDetails }) => {
                   {data.attendance.present === "HADIR"
                     ? "Hadir"
                     : data.attendance.present === "ALFA"
-                    ? "Tidak Hadir"
+                    ? "Alpha"
                     : data.attendance.present === "PERMISSION"
                     ? "Izin"
                     : "Sakit"}
