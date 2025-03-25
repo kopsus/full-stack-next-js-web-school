@@ -9,6 +9,7 @@ import { Edit } from "lucide-react";
 import { decrypt } from "@/lib/actions/session";
 import { cookies } from "next/headers";
 import dayjs from "dayjs";
+import { formatDate } from "@/lib/formatted";
 
 const SingleStudentPage = async ({
   params: { id },
@@ -109,7 +110,7 @@ const SingleStudentPage = async ({
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>{dayjs(student.birthday).format("DD MMMM YYYY")}</span>
+                  <span>{formatDate(student.birthday)}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/mail.png" alt="" width={14} height={14} />
