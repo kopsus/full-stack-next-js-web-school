@@ -113,20 +113,21 @@ export default function TeacherFormUpdate({
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <div className="w-28 h-28 rounded-full overflow-hidden border-2 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
-                {(previewUrl || defaultValues.img) && (
-                  <Image
-                    src={
-                      defaultValues.img
-                        ? `/uploads/${defaultValues.img}`
-                        : previewUrl || defaultValues.img
-                    }
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                    width={160}
-                    height={160}
-                  />
-                )}
+                <Image
+                  src={
+                    previewUrl
+                      ? previewUrl
+                      : defaultValues.img
+                      ? `/uploads/${defaultValues.img}`
+                      : "/avatar.png"
+                  }
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  width={160}
+                  height={160}
+                />
               </div>
+
               <div className="w-full lg:w-4/12 md:w-6/12 md:order-1">
                 <FormField
                   control={form.control}

@@ -117,7 +117,7 @@ export default async function ParentDetailPage({ params }: Props) {
                       <AvatarImage
                         src={
                           student.img
-                            ? `../../uploads/${student.img}`
+                            ? `/uploads/${student.img}`
                             : "/avatar.png"
                         }
                       />

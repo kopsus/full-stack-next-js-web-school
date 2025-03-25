@@ -149,19 +149,13 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
               >
                 <div className="flex justify-center mb-2 md:mb-6">
                   <div className="relative">
-                    {previewUrl ? (
-                      <Image
-                        src={previewUrl}
-                        alt="Profile"
-                        width={100}
-                        height={100}
-                        className="rounded-full object-cover border-2 border-gray-300 h-[100px] w-[100px]"
-                      />
-                    ) : (
-                      <div className="w-[100px] h-[100px] bg-gray-200 rounded-full flex items-center justify-center">
-                        <Upload className="h-8 w-8 text-gray-400" />
-                      </div>
-                    )}
+                    <Image
+                      src={previewUrl ? previewUrl : "/avatar.png"}
+                      alt="Profile"
+                      width={100}
+                      height={100}
+                      className="rounded-full object-cover border-2 border-gray-300 h-[100px] w-[100px]"
+                    />
                     <Input
                       type="file"
                       accept="image/*"
