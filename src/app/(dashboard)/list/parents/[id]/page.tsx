@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Eye, Pencil } from "lucide-react";
 import Link from "next/link";
 import dayjs from "@/lib/dayjs";
-import { formatDate } from "@/lib/formatted";
 
 interface Props {
   params: {
@@ -82,7 +81,9 @@ export default async function ParentDetailPage({ params }: Props) {
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Tanggal Lahir</p>
-                <p className="font-medium">{formatDate(parent.birthday)}</p>
+                <p className="font-medium">
+                  {dayjs(parent.birthday).format("DD MMMM YYYY")}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Jenis Kelamin</p>

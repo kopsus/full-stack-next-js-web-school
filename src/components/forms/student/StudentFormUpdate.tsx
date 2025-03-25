@@ -32,10 +32,24 @@ import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
 
-export default function StudentFormUpdate({ classes, parents, grades, defaultValues }: { classes: any[], parents: any[], grades: any[], defaultValues: any }) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(defaultValues.img || null);
+export default function StudentFormUpdate({
+  classes,
+  parents,
+  grades,
+  defaultValues,
+}: {
+  classes: any[];
+  parents: any[];
+  grades: any[];
+  defaultValues: any;
+}) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    defaultValues.img || null
+  );
   const [imageProfile, setImageProfile] = useState<File | null>(null);
-  const [selectedGrade, setSelectedGrade] = useState<number>(defaultValues.gradeId);
+  const [selectedGrade, setSelectedGrade] = useState<number>(
+    defaultValues.gradeId
+  );
   const router = useRouter();
 
   const form = useForm<z.infer<typeof studentSchema>>({
@@ -56,13 +70,15 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
       classId: defaultValues.classId,
       gradeId: defaultValues.gradeId,
       img: defaultValues.img || "",
-      birthday: new Date(defaultValues.birthday)
+      birthday: new Date(defaultValues.birthday),
     },
   });
 
   const isSubmitting = form.formState.isSubmitting;
 
-  const filteredClasses = classes.filter(classItem => classItem.gradeId === selectedGrade);
+  const filteredClasses = classes.filter(
+    (classItem) => classItem.gradeId === selectedGrade
+  );
 
   async function onSubmit(values: z.infer<typeof studentSchema>) {
     const formData = new FormData();
@@ -72,8 +88,9 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
 
     const data = {
       ...values,
-      password: values.password === "" ? defaultValues.password : values.password,
-    }
+      password:
+        values.password === "" ? defaultValues.password : values.password,
+    };
 
     const result = await updateStudent(defaultValues.id, data, formData);
     if (result.success?.status) {
@@ -97,17 +114,21 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
         >
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              {(previewUrl || defaultValues.img) && (
-                <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
+              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
+                {(previewUrl || defaultValues.img) && (
                   <Image
-                    src={defaultValues.img ? `/uploads/${defaultValues.img}` : previewUrl || defaultValues.img}
+                    src={
+                      defaultValues.img
+                        ? `/uploads/${defaultValues.img}`
+                        : previewUrl || defaultValues.img
+                    }
                     alt="Preview"
                     className="w-full h-full object-cover"
                     width={160}
                     height={160}
                   />
-                </div>
-              )}
+                )}
+              </div>
               <div className="w-full lg:w-4/12 md:w-6/12 md:order-1">
                 <FormField
                   control={form.control}
@@ -322,15 +343,13 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
                   name="gradeId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">
-                        Kelas
-                      </FormLabel>
+                      <FormLabel className="text-gray-700">Kelas</FormLabel>
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
                           setSelectedGrade(Number(value));
                           // Reset classId when grade changes
-                          form.setValue('classId', 1);
+                          form.setValue("classId", 1);
                         }}
                         defaultValue={field.value?.toString()}
                       >
@@ -342,7 +361,10 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
                         <FormMessage />
                         <SelectContent>
                           {grades.map((grade) => (
-                            <SelectItem key={grade.id} value={grade.id.toString()}>
+                            <SelectItem
+                              key={grade.id}
+                              value={grade.id.toString()}
+                            >
                               Kelas {grade.level}
                             </SelectItem>
                           ))}
@@ -371,7 +393,10 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
                         <FormMessage />
                         <SelectContent>
                           {filteredClasses.map((classItem) => (
-                            <SelectItem key={classItem.id} value={classItem.id.toString()}>
+                            <SelectItem
+                              key={classItem.id}
+                              value={classItem.id.toString()}
+                            >
                               {classItem.name}
                             </SelectItem>
                           ))}
@@ -385,9 +410,7 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
                   name="parentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">
-                        Orang Tua
-                      </FormLabel>
+                      <FormLabel className="text-gray-700">Orang Tua</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value?.toString()}
@@ -400,7 +423,10 @@ export default function StudentFormUpdate({ classes, parents, grades, defaultVal
                         <FormMessage />
                         <SelectContent>
                           {parents.map((parent) => (
-                            <SelectItem key={parent.id} value={parent.id.toString()}>
+                            <SelectItem
+                              key={parent.id}
+                              value={parent.id.toString()}
+                            >
                               {parent.first_name} {parent.last_name}
                             </SelectItem>
                           ))}

@@ -33,13 +33,23 @@ import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
 
-export default function TeacherFormUpdate({ subjects, defaultValues }: { subjects: any[], defaultValues: any }) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(defaultValues.img || null);
+export default function TeacherFormUpdate({
+  subjects,
+  defaultValues,
+}: {
+  subjects: any[];
+  defaultValues: any;
+}) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    defaultValues.img || null
+  );
   const [imageProfile, setImageProfile] = useState<File | null>(null);
   const router = useRouter();
 
   // Get subject IDs from defaultValues.subjects
-  const defaultSubjectIds = defaultValues.subjects.map((subject: any) => subject.id);
+  const defaultSubjectIds = defaultValues.subjects.map(
+    (subject: any) => subject.id
+  );
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof teacherSchema>>({
@@ -73,10 +83,12 @@ export default function TeacherFormUpdate({ subjects, defaultValues }: { subject
 
     const data = {
       ...values,
-      password: values.password === "" ? defaultValues.password : values.password,
-    }
+      password:
+        values.password === "" ? defaultValues.password : values.password,
+    };
 
     const result = await updateTeacher(defaultValues.id, data, formData);
+
     if (result.success?.status) {
       toast.success(result.success.message);
       router.push("/list/teachers");
@@ -84,6 +96,8 @@ export default function TeacherFormUpdate({ subjects, defaultValues }: { subject
       toast.error(result.error.message);
     }
   }
+
+  console.log("data teacher", defaultValues);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm flex-1 m-4 mt-0 md:w-10/12">
@@ -98,17 +112,21 @@ export default function TeacherFormUpdate({ subjects, defaultValues }: { subject
         >
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              {(previewUrl || defaultValues.img) && (
-                <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
+              <div className="w-28 h-28 rounded-full overflow-hidden border-2 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
+                {(previewUrl || defaultValues.img) && (
                   <Image
-                    src={previewUrl || defaultValues.img}
+                    src={
+                      defaultValues.img
+                        ? `/uploads/${defaultValues.img}`
+                        : previewUrl || defaultValues.img
+                    }
                     alt="Preview"
                     className="w-full h-full object-cover"
                     width={160}
                     height={160}
                   />
-                </div>
-              )}
+                )}
+              </div>
               <div className="w-full lg:w-4/12 md:w-6/12 md:order-1">
                 <FormField
                   control={form.control}
@@ -256,7 +274,7 @@ export default function TeacherFormUpdate({ subjects, defaultValues }: { subject
                           className="border-gray-300 focus:border-blue-500"
                           value={dayjs(field.value).format("YYYY-MM-DD")}
                           onChange={(e) =>
-                            field.onChange(dayjs(e.target.value).toDate())
+                            field.onChange(new Date(e.target.value))
                           }
                         />
                       </FormControl>
