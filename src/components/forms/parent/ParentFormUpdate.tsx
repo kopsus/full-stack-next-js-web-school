@@ -263,7 +263,7 @@ export default function ParentFormUpdate({
                           className="border-gray-300 focus:border-blue-500"
                           value={dayjs(field.value).format("YYYY-MM-DD")}
                           onChange={(e) =>
-                            field.onChange(dayjs(e.target.value).toDate())
+                            field.onChange(new Date(e.target.value))
                           }
                         />
                       </FormControl>

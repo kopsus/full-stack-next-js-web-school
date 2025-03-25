@@ -32,12 +32,20 @@ import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
 
-export default function StudentFormCreate({ classes, parents, grades }: { classes: any[], parents: any[], grades: any[] }) {
+export default function StudentFormCreate({
+  classes,
+  parents,
+  grades,
+}: {
+  classes: any[];
+  parents: any[];
+  grades: any[];
+}) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageProfile, setImageProfile] = useState<File | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<number>(1);
   const router = useRouter();
-  
+
   const form = useForm<z.infer<typeof studentSchema>>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
@@ -55,13 +63,15 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
       classId: undefined,
       gradeId: undefined,
       img: "",
-      birthday: new Date()
+      birthday: new Date(),
     },
   });
 
   const isSubmitting = form.formState.isSubmitting;
 
-  const filteredClasses = classes.filter(classItem => classItem.gradeId === selectedGrade);
+  const filteredClasses = classes.filter(
+    (classItem) => classItem.gradeId === selectedGrade
+  );
 
   async function onSubmit(values: z.infer<typeof studentSchema>) {
     const formData = new FormData();
@@ -249,7 +259,7 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                           className="border-gray-300 focus:border-blue-500"
                           value={dayjs(field.value).format("YYYY-MM-DD")}
                           onChange={(e) =>
-                            field.onChange(dayjs(e.target.value).toDate())
+                            field.onChange(new Date(e.target.value))
                           }
                         />
                       </FormControl>
@@ -316,9 +326,7 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                   name="parentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">
-                        Orang Tua
-                      </FormLabel>
+                      <FormLabel className="text-gray-700">Orang Tua</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value?.toString()}
@@ -331,7 +339,10 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                         <FormMessage />
                         <SelectContent>
                           {parents.map((parent) => (
-                            <SelectItem key={parent.id} value={parent.id.toString()}>
+                            <SelectItem
+                              key={parent.id}
+                              value={parent.id.toString()}
+                            >
                               {parent.first_name} {parent.last_name}
                             </SelectItem>
                           ))}
@@ -345,15 +356,13 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                   name="gradeId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">
-                        Kelas
-                      </FormLabel>
+                      <FormLabel className="text-gray-700">Kelas</FormLabel>
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
                           setSelectedGrade(Number(value));
                           // Reset classId when grade changes
-                          form.setValue('classId', 1);
+                          form.setValue("classId", 1);
                         }}
                         defaultValue={field.value?.toString()}
                       >
@@ -367,7 +376,10 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                           {grades
                             .sort((a, b) => a.level - b.level)
                             .map((grade) => (
-                              <SelectItem key={grade.id} value={grade.id.toString()}>
+                              <SelectItem
+                                key={grade.id}
+                                value={grade.id.toString()}
+                              >
                                 Kelas {grade.level}
                               </SelectItem>
                             ))}
@@ -385,7 +397,7 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                         Ruang Kelas
                       </FormLabel>
                       <Select
-                        disabled={!form.getValues('gradeId')}
+                        disabled={!form.getValues("gradeId")}
                         onValueChange={field.onChange}
                         defaultValue={field.value?.toString()}
                       >
@@ -397,7 +409,10 @@ export default function StudentFormCreate({ classes, parents, grades }: { classe
                         <FormMessage />
                         <SelectContent>
                           {filteredClasses.map((classItem) => (
-                            <SelectItem key={classItem.id} value={classItem.id.toString()}>
+                            <SelectItem
+                              key={classItem.id}
+                              value={classItem.id.toString()}
+                            >
                               {classItem.name}
                             </SelectItem>
                           ))}
