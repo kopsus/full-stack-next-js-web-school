@@ -41,10 +41,23 @@ export default function TeacherFormUpdate({
   defaultValues: any;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    defaultValues.img || null
+    defaultValues.img ? `/uploads/${defaultValues.img}` : null
   );
   const [imageProfile, setImageProfile] = useState<File | null>(null);
   const router = useRouter();
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setImageProfile(file);
+
+      // Bersihkan URL yang lama untuk menghindari memory leak
+      return () => URL.revokeObjectURL(url);
+    }
+  };
 
   // Get subject IDs from defaultValues.subjects
   const defaultSubjectIds = defaultValues.subjects.map(
@@ -97,8 +110,6 @@ export default function TeacherFormUpdate({
     }
   }
 
-  console.log("data teacher", defaultValues);
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm flex-1 m-4 mt-0 md:w-10/12">
       <div className="flex flex-row justify-between items-center mb-6">
@@ -114,13 +125,7 @@ export default function TeacherFormUpdate({
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <div className="w-28 h-28 rounded-full overflow-hidden border-2 shadow-sm hover:border-blue-400 transition-all duration-300 md:order-2">
                 <Image
-                  src={
-                    previewUrl
-                      ? previewUrl
-                      : defaultValues.img
-                      ? `/uploads/${defaultValues.img}`
-                      : "/avatar.png"
-                  }
+                  src={previewUrl || "/avatar.png"}
                   alt="Preview"
                   className="w-full h-full object-cover"
                   width={160}
@@ -143,14 +148,7 @@ export default function TeacherFormUpdate({
                             type="file"
                             accept="image/*"
                             className="h-12 border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 rounded-lg cursor-pointer file:cursor-pointer pl-12 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              setImageProfile(file || null);
-                              if (file) {
-                                const url = URL.createObjectURL(file);
-                                setPreviewUrl(url);
-                              }
-                            }}
+                            onChange={handleImageChange}
                           />
                           <Upload className="w-6 h-6 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
                         </div>

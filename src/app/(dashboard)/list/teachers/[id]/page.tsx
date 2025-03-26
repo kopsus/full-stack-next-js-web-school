@@ -77,15 +77,13 @@ const SingleTeacherPage = async ({
         <div className="flex flex-col lg:flex-row gap-4">
           {/* USER INFO CARD */}
           <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
-            <div className="w-1/3">
-              <Image
-                src={teacher.img ? `/uploads/${teacher.img}` : "/avatar.png"}
-                alt=""
-                width={144}
-                height={144}
-                className="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover"
-              />
-            </div>
+            <Image
+              src={teacher.img ? `/uploads/${teacher.img}` : "/avatar.png"}
+              alt=""
+              width={144}
+              height={144}
+              className="w-20 h-20 md:w-28 md:min-w-28 md:h-28 rounded-full object-cover"
+            />
             <div className="w-2/3 flex flex-col gap-1">
               <div className="flex items-center gap-4">
                 <h1 className="text-xl font-semibold">
