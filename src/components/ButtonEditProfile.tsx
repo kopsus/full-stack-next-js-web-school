@@ -38,6 +38,7 @@ import {
 } from "@/lib/formValidationSchemas/profile";
 import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface IButtonEdit {
   setProfile: any;
@@ -45,6 +46,7 @@ interface IButtonEdit {
 }
 
 export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -143,7 +145,7 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
             img: imageProfile ? imageProfile.name : prev.img,
           }));
         } else {
-          toast.error("Gambar belum tersedia, coba refresh halaman.");
+          router.refresh();
         }
 
         setOpen(false);
