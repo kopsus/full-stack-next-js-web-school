@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { Pencil, Upload } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import {
   Select,
@@ -38,7 +38,6 @@ import {
 } from "@/lib/formValidationSchemas/profile";
 import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 interface IButtonEdit {
   setProfile: any;
@@ -46,7 +45,6 @@ interface IButtonEdit {
 }
 
 export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
-  const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -84,21 +82,35 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
     }
   };
 
-  async function waitForImageAvailability(
+  async function waitForImageWithPolling(
     imageUrl: string,
     maxRetries = 10,
-    delay = 500
+    interval = 1000
   ) {
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        const response = await fetch(imageUrl, { method: "HEAD" });
-        if (response.ok) return true;
-      } catch (error) {
-        console.log("Menunggu gambar tersedia...", error);
-      }
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-    return false;
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const checkImage = async () => {
+        try {
+          const response = await fetch(imageUrl, {
+            method: "HEAD",
+            cache: "no-cache",
+          });
+          if (response.ok) {
+            resolve(true);
+            return;
+          }
+        } catch (error) {
+          console.log(`Menunggu gambar tersedia... percobaan ${attempts + 1}`);
+        }
+        attempts++;
+        if (attempts >= maxRetries) {
+          resolve(false);
+          return;
+        }
+        setTimeout(checkImage, interval);
+      };
+      checkImage();
+    });
   }
 
   async function onSubmit(values: ProfileSchema) {
@@ -136,16 +148,21 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
         toast.success(result.success.message);
 
         // Tunggu hingga gambar tersedia di server
-        const imageUrl = `/uploads/${imageProfile?.name}`;
-        const isImageAvailable = await waitForImageAvailability(imageUrl);
+        const imageUrl = `/uploads/${
+          imageProfile?.name
+        }?t=${new Date().getTime()}`;
+        const isImageAvailable = await waitForImageWithPolling(imageUrl);
 
         if (isImageAvailable) {
           setProfile((prev: { img: any }) => ({
             ...prev,
-            img: `${imageProfile?.name}?t=${new Date().getTime()}`,
+            img: imageUrl, // Tambahkan cache-busting timestamp
           }));
+          toast.success("Gambar berhasil diperbarui!");
         } else {
-          toast.error("Gambar belum tersedia, coba refresh halaman.");
+          toast.error(
+            "Gambar belum tersedia setelah beberapa percobaan. Coba refresh halaman."
+          );
         }
 
         setOpen(false);
