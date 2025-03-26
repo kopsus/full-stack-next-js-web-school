@@ -145,8 +145,6 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
       );
 
       if (result.success?.status) {
-        toast.success(result.success.message);
-
         // Tunggu hingga gambar tersedia di server
         const imageUrl = `/uploads/${
           imageProfile?.name
@@ -160,10 +158,8 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
           }));
           toast.success("Gambar berhasil diperbarui!");
         } else {
+          toast.success(result.success.message);
           window.location.reload();
-          // toast.error(
-          //   "Gambar belum tersedia setelah beberapa percobaan. Coba refresh halaman."
-          // );
         }
 
         setOpen(false);
