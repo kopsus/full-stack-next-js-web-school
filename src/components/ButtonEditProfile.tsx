@@ -160,9 +160,10 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
           }));
           toast.success("Gambar berhasil diperbarui!");
         } else {
-          toast.error(
-            "Gambar belum tersedia setelah beberapa percobaan. Coba refresh halaman."
-          );
+          window.location.reload();
+          // toast.error(
+          //   "Gambar belum tersedia setelah beberapa percobaan. Coba refresh halaman."
+          // );
         }
 
         setOpen(false);
