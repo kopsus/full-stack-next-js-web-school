@@ -142,11 +142,8 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
         if (isImageAvailable) {
           setProfile((prev: { img: any }) => ({
             ...prev,
-            img: imageProfile ? imageProfile.name : prev.img,
+            img: `${imageProfile?.name}?t=${new Date().getTime()}`,
           }));
-          setTimeout(() => {
-            router.refresh();
-          }, 500);
         } else {
           toast.error("Gambar belum tersedia, coba refresh halaman.");
         }

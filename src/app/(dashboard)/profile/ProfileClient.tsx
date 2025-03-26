@@ -13,6 +13,7 @@ const ProfileClient = ({ data, role }: any) => {
       <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row gap-8 items-center relative">
         <div className="relative w-32 h-32 group bg-slate-200 overflow-hidden">
           <Image
+            key={profile?.img}
             src={profile?.img ? `/uploads/${profile?.img}` : "/avatar.png"}
             alt="Profile"
             width={100}
