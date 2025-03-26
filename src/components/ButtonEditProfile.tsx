@@ -39,7 +39,12 @@ import {
 import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
 
-export default function ButtonEdit({ data }: { data: ProfileSchema }) {
+interface IButtonEdit {
+  setProfile: any;
+  data: ProfileSchema;
+}
+
+export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
   const [isUploading, setIsUploading] = useState(false);
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -62,8 +67,6 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
       img: data.img || null,
     },
   });
-
-  const isSubmitting = form.formState.isSubmitting;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,7 +118,10 @@ export default function ButtonEdit({ data }: { data: ProfileSchema }) {
 
         // Pastikan gambar sudah tersedia sebelum menutup dialog
         await new Promise((resolve) => setTimeout(resolve, 500)); // Opsional, delay 500ms untuk memastikan update selesai
-
+        setProfile((prev: { img: any }) => ({
+          ...prev,
+          img: imageProfile ? imageProfile.name : prev.img,
+        }));
         setOpen(false);
       } else {
         toast.error(result.error.message);
