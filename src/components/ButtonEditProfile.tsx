@@ -82,9 +82,26 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
     }
   };
 
+  async function waitForImageAvailability(
+    imageUrl: string,
+    maxRetries = 10,
+    delay = 500
+  ) {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const response = await fetch(imageUrl, { method: "HEAD" });
+        if (response.ok) return true;
+      } catch (error) {
+        console.log("Menunggu gambar tersedia...", error);
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    return false;
+  }
+
   async function onSubmit(values: ProfileSchema) {
     try {
-      setIsUploading(true); // Set loading sebelum mulai upload
+      setIsUploading(true);
 
       const formData = new FormData();
       if (imageProfile) {
@@ -116,12 +133,19 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
       if (result.success?.status) {
         toast.success(result.success.message);
 
-        // Pastikan gambar sudah tersedia sebelum menutup dialog
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Opsional, delay 500ms untuk memastikan update selesai
-        setProfile((prev: { img: any }) => ({
-          ...prev,
-          img: imageProfile ? imageProfile.name : prev.img,
-        }));
+        // Tunggu hingga gambar tersedia di server
+        const imageUrl = `/uploads/${imageProfile?.name}`;
+        const isImageAvailable = await waitForImageAvailability(imageUrl);
+
+        if (isImageAvailable) {
+          setProfile((prev: { img: any }) => ({
+            ...prev,
+            img: imageProfile ? imageProfile.name : prev.img,
+          }));
+        } else {
+          toast.error("Gambar belum tersedia, coba refresh halaman.");
+        }
+
         setOpen(false);
       } else {
         toast.error(result.error.message);
@@ -129,7 +153,7 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
     } catch (error) {
       toast.error("Failed to update profile");
     } finally {
-      setIsUploading(false); // Reset loading state
+      setIsUploading(false);
     }
   }
 
