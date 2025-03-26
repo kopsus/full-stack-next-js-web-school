@@ -144,8 +144,11 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
             ...prev,
             img: imageProfile ? imageProfile.name : prev.img,
           }));
+          setTimeout(() => {
+            router.refresh();
+          }, 500);
         } else {
-          router.refresh();
+          toast.error("Gambar belum tersedia, coba refresh halaman.");
         }
 
         setOpen(false);
