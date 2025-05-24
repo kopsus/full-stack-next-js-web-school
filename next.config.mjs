@@ -9,6 +9,11 @@ const nextConfig = {
       { hostname: "145.79.13.76" },
     ],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "1mb",
+    },
+  },
 };
 
 export default nextConfig;

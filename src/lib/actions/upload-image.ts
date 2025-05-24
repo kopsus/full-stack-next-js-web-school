@@ -12,6 +12,7 @@ export async function uploadImage(image: FormData) {
   if (!(imageFile instanceof File)) {
     return responServerAction({
       statusError: true,
+      statusSuccess: false,
       messageError: "Gagal mengupload gambar, file tidak valid",
       data: null,
     });
@@ -21,6 +22,7 @@ export async function uploadImage(image: FormData) {
   if (imageFile.size > MAX_FILE_SIZE) {
     return responServerAction({
       statusError: true,
+      statusSuccess: false,
       messageError: "Ukuran gambar terlalu besar, maksimal 1MB",
       data: null,
     });
@@ -49,12 +51,14 @@ export async function uploadImage(image: FormData) {
 
     return responServerAction({
       statusSuccess: true,
+      statusError: false,
       messageSuccess: "Berhasil mengupload gambar",
       data: uniqueFileName,
     });
   } catch (error) {
     return responServerAction({
       statusError: true,
+      statusSuccess: false,
       messageError: "Gagal mengupload gambar: " + (error as Error).message,
       data: null,
     });
