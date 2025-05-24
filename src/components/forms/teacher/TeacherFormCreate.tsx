@@ -121,6 +121,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                                 setPreviewUrl(URL.createObjectURL(file));
                               }
                             }}
+                            required
                           />
                           <Upload className="w-6 h-6 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
                         </div>

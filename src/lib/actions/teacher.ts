@@ -91,38 +91,38 @@ export const updateTeacher = async (
   image?: FormData
 ) => {
   try {
-    // Ambil data produk lama
-    const oldProduct = await prisma.teacher.findUnique({
+    // Ambil data lama
+    const oldData = await prisma.teacher.findUnique({
       where: { id },
     });
 
-    if (!oldProduct) {
+    if (!oldData) {
       return responServerAction({
-        statusSuccess: false,
         statusError: true,
-        messageError: "Produk tidak ditemukan",
+        statusSuccess: false,
+        messageError: "Data tidak ditemukan",
       });
     }
 
-    let imagePath = oldProduct.img; // Default tetap pakai gambar lama
+    let imagePath = oldData.img; // Default tetap pakai gambar lama
 
     // Jika ada image baru yang diunggah
-    if (image) {
+    if (image && image.get("img")) {
       const result = await uploadImage(image);
       if (result.error.status) {
         return responServerAction({
-          statusSuccess: false,
           statusError: true,
+          statusSuccess: false,
           messageError: result.error.message,
         });
       }
 
       // Hapus gambar lama jika ada
-      if (oldProduct.img) {
+      if (oldData.img) {
         const oldImagePath = path.join(
           process.cwd(),
           "/var/www/uploads",
-          oldProduct.img
+          oldData.img
         );
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);

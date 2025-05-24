@@ -135,6 +135,7 @@ export default function StudentFormCreate({
                                 setPreviewUrl(url);
                               }
                             }}
+                            required
                           />
                           <Upload className="w-6 h-6 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
                         </div>
@@ -160,6 +161,7 @@ export default function StudentFormCreate({
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Username"
                         />
                       </FormControl>
                       <FormMessage />
@@ -177,6 +179,7 @@ export default function StudentFormCreate({
                           type="email"
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="example@gmail.com"
                         />
                       </FormControl>
                       <FormMessage />
@@ -202,6 +205,8 @@ export default function StudentFormCreate({
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Nama Depan"
+                          required
                         />
                       </FormControl>
                       <FormMessage />
@@ -220,6 +225,8 @@ export default function StudentFormCreate({
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          required
+                          placeholder="masukan Nama Belakang"
                         />
                       </FormControl>
                       <FormMessage />
@@ -239,6 +246,7 @@ export default function StudentFormCreate({
                           type="tel"
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Nomor Telepon"
                         />
                       </FormControl>
                       <FormMessage />
@@ -431,6 +439,7 @@ export default function StudentFormCreate({
                         <Textarea
                           className="border-gray-300 focus:border-blue-500 min-h-[100px]"
                           {...field}
+                          placeholder="masukan alamat"
                         />
                       </FormControl>
                       <FormMessage />

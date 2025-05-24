@@ -6,6 +6,8 @@ import prisma from "../prisma";
 import { responServerAction } from "./responServerActionType";
 import { uploadImage } from "./upload-image";
 import bcrypt from "bcryptjs";
+import path from "path";
+import fs from "fs";
 
 export const createParent = async (data: ParentSchema, image?: FormData) => {
   try {
@@ -24,7 +26,19 @@ export const createParent = async (data: ParentSchema, image?: FormData) => {
       });
     }
 
-    let path = null;
+    let imagePath = null;
+
+    if (image) {
+      const result = await uploadImage(image);
+      if (result.error.status) {
+        return responServerAction({
+          statusError: true,
+          statusSuccess: false,
+          messageError: result.error.message,
+        });
+      }
+      imagePath = result.data;
+    }
 
     const parent = await prisma.parent.create({
       data: {
@@ -41,29 +55,9 @@ export const createParent = async (data: ParentSchema, image?: FormData) => {
         students: {
           connect: (data.students || []).map((student) => ({ id: student })),
         },
+        img: imagePath,
       },
     });
-
-    const imageFile = image?.get("img") as File;
-    if (imageFile) {
-      const result = await uploadImage(image!);
-      if (result.error?.status) {
-        return responServerAction({
-          statusSuccess: false,
-          statusError: true,
-          messageError: result.error.message,
-          data: null,
-        });
-      }
-      path = result.data as string;
-    }
-
-    if (path !== null) {
-      await prisma.parent.update({
-        where: { id: parent.id },
-        data: { img: path },
-      });
-    }
 
     revalidatePath("/list/parents");
     return responServerAction({
@@ -88,7 +82,46 @@ export const updateParent = async (
   image?: FormData
 ) => {
   try {
-    let path = null;
+    // Ambil data lama
+    const oldData = await prisma.teacher.findUnique({
+      where: { id },
+    });
+
+    if (!oldData) {
+      return responServerAction({
+        statusError: true,
+        statusSuccess: false,
+        messageError: "Data tidak ditemukan",
+      });
+    }
+
+    let imagePath = oldData.img; // Default tetap pakai gambar lama
+
+    // Jika ada image baru yang diunggah
+    if (image && image.get("img")) {
+      const result = await uploadImage(image);
+      if (result.error.status) {
+        return responServerAction({
+          statusError: true,
+          statusSuccess: false,
+          messageError: result.error.message,
+        });
+      }
+
+      // Hapus gambar lama jika ada
+      if (oldData.img) {
+        const oldImagePath = path.join(
+          process.cwd(),
+          "/var/www/uploads",
+          oldData.img
+        );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+
+      imagePath = result.data; // Update dengan image baru
+    }
 
     await prisma.parent.update({
       where: { id },
@@ -106,27 +139,9 @@ export const updateParent = async (
         students: {
           set: (data.students || []).map((student) => ({ id: student })),
         },
+        img: imagePath,
       },
     });
-
-    const imageFile = image?.get("img") as File;
-    if (imageFile) {
-      const result = await uploadImage(image!);
-      if (result.error?.status) {
-        return responServerAction({
-          statusSuccess: false,
-          statusError: true,
-          messageError: result.error.message,
-          data: null,
-        });
-      }
-      path = result.data as string;
-
-      await prisma.parent.update({
-        where: { id },
-        data: { img: path },
-      });
-    }
 
     revalidatePath("/list/parents");
     return responServerAction({

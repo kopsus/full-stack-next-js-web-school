@@ -29,6 +29,7 @@ import { responServerAction } from "@/lib/actions/responServerActionType";
 import { deleteStudent } from "@/lib/actions/student";
 import { toast } from "react-toastify";
 import dayjs from "@/lib/dayjs";
+import { baseIMAGEURL } from "@/lib/utils";
 
 type StudentWithClass = Student & {
   class: Class | null;
@@ -47,7 +48,7 @@ export const columns: ColumnDef<StudentWithClass>[] = [
             className="object-cover"
             src={
               row.original.img
-                ? `../uploads/${row.original.img}`
+                ? `${baseIMAGEURL}/${row.original.img}`
                 : "/avatar.png"
             }
           />
