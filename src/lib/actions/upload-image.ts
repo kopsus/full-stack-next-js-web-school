@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { responServerAction } from "./responServerActionType";
 
 export async function uploadImage(image: FormData) {
-  const imageFile = image.get("image") as File;
+  const imageFile = image.get("img") as File;
 
   if (!(imageFile instanceof File)) {
     return responServerAction({

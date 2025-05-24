@@ -28,6 +28,7 @@ import {
 import { responServerAction } from "@/lib/actions/responServerActionType";
 import { deleteTeacher } from "@/lib/actions/teacher";
 import { toast } from "react-toastify";
+import { baseIMAGEURL } from "@/lib/utils";
 
 interface TeacherData extends Teacher {
   roleLogin: Role;
@@ -45,7 +46,7 @@ export const columns: ColumnDef<TeacherData>[] = [
             className="object-cover"
             src={
               row.original.img
-                ? `../uploads/${row.original.img}`
+                ? `${baseIMAGEURL}/${row.original.img}`
                 : "/avatar.png"
             }
           />

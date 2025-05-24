@@ -63,7 +63,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
   async function onSubmit(values: z.infer<typeof teacherSchema>) {
     const formData = new FormData();
     if (imageProfile) {
-      formData.append("img", imageProfile as File);
+      formData.append("img", imageProfile);
     }
 
     const result = await createTeacher(values, formData);
@@ -103,7 +103,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                 <FormField
                   control={form.control}
                   name="img"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel className="text-gray-700 font-medium">
                         Foto
@@ -118,8 +118,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                               const file = e.target.files?.[0];
                               setImageProfile(file || null);
                               if (file) {
-                                const url = URL.createObjectURL(file);
-                                setPreviewUrl(url);
+                                setPreviewUrl(URL.createObjectURL(file));
                               }
                             }}
                           />
@@ -147,6 +146,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan username"
                         />
                       </FormControl>
                       <FormMessage />
@@ -164,6 +164,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                           type="email"
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan email"
                         />
                       </FormControl>
                       <FormMessage />
@@ -189,6 +190,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Nama Depan"
                         />
                       </FormControl>
                       <FormMessage />
@@ -207,6 +209,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                         <Input
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Nama Belakang"
                         />
                       </FormControl>
                       <FormMessage />
@@ -226,6 +229,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                           type="tel"
                           className="border-gray-300 focus:border-blue-500"
                           {...field}
+                          placeholder="masukan Nomor Telepon"
                         />
                       </FormControl>
                       <FormMessage />
@@ -318,6 +322,7 @@ export default function TeacherFormCreate({ subjects }: { subjects: any[] }) {
                         <Textarea
                           className="border-gray-300 focus:border-blue-500 min-h-[100px]"
                           {...field}
+                          placeholder="masukan alamat anda"
                         />
                       </FormControl>
                       <FormMessage />

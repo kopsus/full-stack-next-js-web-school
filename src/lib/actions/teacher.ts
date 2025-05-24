@@ -7,6 +7,8 @@ import { responServerAction } from "./responServerActionType";
 import { uploadImage } from "./upload-image";
 import bcrypt from "bcryptjs";
 import { deleteImage } from "./delete-image";
+import path from "path";
+import fs from "fs";
 
 export const createTeacher = async (data: TeacherSchema, image?: FormData) => {
   try {
@@ -25,7 +27,19 @@ export const createTeacher = async (data: TeacherSchema, image?: FormData) => {
       });
     }
 
-    let path = null;
+    let imagePath = null;
+
+    if (image) {
+      const result = await uploadImage(image);
+      if (result.error.status) {
+        return responServerAction({
+          statusError: true,
+          statusSuccess: false,
+          messageError: result.error.message,
+        });
+      }
+      imagePath = result.data;
+    }
 
     const teacher = await prisma.teacher.create({
       data: {
@@ -39,6 +53,7 @@ export const createTeacher = async (data: TeacherSchema, image?: FormData) => {
         username: data.username,
         password: bcrypt.hashSync(data.password, 10),
         birthday: data.birthday,
+        img: imagePath,
         subjects: {
           connect: data.subjects
             ? data.subjects.map((subjectId) => ({ id: Number(subjectId) }))
@@ -52,33 +67,12 @@ export const createTeacher = async (data: TeacherSchema, image?: FormData) => {
       },
     });
 
-    // cek apakah isi dari image, jika string kosong maka tidak ada gambar yang diupload
-    const imageFile = image?.get("img") as File;
-    if (imageFile) {
-      const result = await uploadImage(image!);
-      if (result.error?.status) {
-        return responServerAction({
-          statusSuccess: false,
-          statusError: true,
-          messageError: result.error.message,
-          data: null,
-        });
-      }
-      path = result.data as string;
-    }
-
-    if (path !== null) {
-      await prisma.teacher.update({
-        where: { id: teacher.id },
-        data: { img: path },
-      });
-    }
-
     revalidatePath("/list/teachers");
     return responServerAction({
       statusSuccess: true,
       statusError: false,
       messageSuccess: "Berhasil membuat data guru",
+      data: teacher,
     });
   } catch (error) {
     console.log(error);
@@ -97,7 +91,46 @@ export const updateTeacher = async (
   image?: FormData
 ) => {
   try {
-    let path = null;
+    // Ambil data produk lama
+    const oldProduct = await prisma.teacher.findUnique({
+      where: { id },
+    });
+
+    if (!oldProduct) {
+      return responServerAction({
+        statusSuccess: false,
+        statusError: true,
+        messageError: "Produk tidak ditemukan",
+      });
+    }
+
+    let imagePath = oldProduct.img; // Default tetap pakai gambar lama
+
+    // Jika ada image baru yang diunggah
+    if (image) {
+      const result = await uploadImage(image);
+      if (result.error.status) {
+        return responServerAction({
+          statusSuccess: false,
+          statusError: true,
+          messageError: result.error.message,
+        });
+      }
+
+      // Hapus gambar lama jika ada
+      if (oldProduct.img) {
+        const oldImagePath = path.join(
+          process.cwd(),
+          "/var/www/uploads",
+          oldProduct.img
+        );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+
+      imagePath = result.data; // Update dengan image baru
+    }
 
     // Update teacher data
     await prisma.teacher.update({
@@ -125,29 +158,9 @@ export const updateTeacher = async (
             ? data.classes.map((classId) => ({ id: Number(classId) }))
             : [],
         },
+        img: imagePath,
       },
     });
-
-    // Handle image upload if provided
-    const imageFile = image?.get("img") as File;
-    if (imageFile) {
-      const result = await uploadImage(image!);
-      if (result.error?.status) {
-        return responServerAction({
-          statusSuccess: false,
-          statusError: true,
-          messageError: result.error.message,
-          data: null,
-        });
-      }
-      path = result.data as string;
-
-      // Update image path
-      await prisma.teacher.update({
-        where: { id },
-        data: { img: path },
-      });
-    }
 
     revalidatePath("/list/teachers");
     return responServerAction({

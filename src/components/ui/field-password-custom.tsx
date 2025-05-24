@@ -34,6 +34,7 @@ export default function FieldPasswordCustom({
                 type={showPassword ? "text" : "password"}
                 className="border-gray-300 focus:border-blue-500 w-full"
                 {...field}
+                placeholder="masukan password"
               />
               <button
                 type="button"
