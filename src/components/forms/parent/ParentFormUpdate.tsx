@@ -33,6 +33,7 @@ import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
 import { Student, Parent } from "@prisma/client";
 import CustomSearchableInputStudent from "@/components/CustomSearchableInputStudent";
+import { baseIMAGEURL } from "@/lib/utils";
 
 type ParentFormUpdateProps = {
   students: Student[];
@@ -44,7 +45,7 @@ export default function ParentFormUpdate({
   defaultValues,
 }: ParentFormUpdateProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    defaultValues.img ? `/uploads/${defaultValues.img}` : null
+    defaultValues.img ? `${baseIMAGEURL}/${defaultValues.img}` : null
   );
   const [imageProfile, setImageProfile] = useState<File | null>(null);
   const router = useRouter();
@@ -111,7 +112,7 @@ export default function ParentFormUpdate({
                     previewUrl
                       ? previewUrl
                       : defaultValues.img
-                      ? `/uploads/${defaultValues.img}`
+                      ? `${baseIMAGEURL}/${defaultValues.img}`
                       : "/avatar.png"
                   }
                   alt="Preview"

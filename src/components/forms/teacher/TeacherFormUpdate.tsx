@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
+import { baseIMAGEURL } from "@/lib/utils";
 
 export default function TeacherFormUpdate({
   subjects,
@@ -41,7 +42,7 @@ export default function TeacherFormUpdate({
   defaultValues: any;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    defaultValues.img ? `/uploads/${defaultValues.img}` : null
+    defaultValues.img ? `${baseIMAGEURL}/${defaultValues.img}` : null
   );
   const [imageProfile, setImageProfile] = useState<File | null>(null);
   const router = useRouter();

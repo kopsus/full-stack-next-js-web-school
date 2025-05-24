@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { parentSchema } from "@/lib/formValidationSchemas/parent";
 import { Upload } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { createParent } from "@/lib/actions/parent";
 import Image from "next/image";
@@ -32,7 +32,6 @@ import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
 import { Student } from "@prisma/client";
-import CustomSearchableInput from "@/components/CustomSearchableInputStudent";
 import CustomSearchableInputStudent from "@/components/CustomSearchableInputStudent";
 
 export default function ParentFormCreate({
@@ -42,20 +41,18 @@ export default function ParentFormCreate({
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageProfile, setImageProfile] = useState<File | null>(null);
-  const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
-  const rand = Math.floor(Math.random() * 1000000);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof parentSchema>>({
     resolver: zodResolver(parentSchema),
     defaultValues: {
-      first_name: "parent" + rand,
-      last_name: "parent-generated-last-name-" + rand,
-      email: "parent-generated-email-" + rand + "@example.com",
-      phone: "081234567890",
-      address: "parent-generated-address-" + rand,
-      username: "parent" + rand,
-      password: "parent-generated-password-" + rand,
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      address: "",
+      username: "",
+      password: "",
       blood_type: "A",
       sex: "MALE",
       img: "",

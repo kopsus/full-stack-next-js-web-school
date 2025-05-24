@@ -4,18 +4,18 @@ import React from "react";
 import Image from "next/image";
 import ButtonEditProfile from "@/components/ButtonEditProfile";
 import dayjs from "dayjs";
+import { baseIMAGEURL } from "@/lib/utils";
 
 const ProfileClient = ({ data, role }: any) => {
-  const [profile, setProfile] = React.useState(data);
   return (
     <div className="p-4 flex flex-col gap-4 w-full md:w-10/12 mx-auto">
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row gap-8 items-center relative">
         <div className="relative w-32 h-32 group bg-slate-200 overflow-hidden">
           <Image
-            key={profile?.img}
-            src={profile?.img ? `/uploads/${profile?.img}` : "/avatar.png"}
-            alt="Profile"
+            key={data?.img}
+            src={data?.img ? `${baseIMAGEURL}/${data?.img}` : "/avatar.png"}
+            alt="data"
             width={100}
             height={100}
             className="block object-cover w-full h-full"
@@ -24,14 +24,14 @@ const ProfileClient = ({ data, role }: any) => {
         <div className="flex flex-col items-center md:items-start gap-3">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-gray-800">
-              {profile?.first_name && profile?.last_name
-                ? `${profile?.first_name} ${profile?.last_name}`
-                : profile?.username || "No name provided"}
+              {data?.first_name && data?.last_name
+                ? `${data?.first_name} ${data?.last_name}`
+                : data?.username || "No name provided"}
             </h1>
           </div>
           <div className="flex flex-col md:flex-row gap-2 text-gray-600">
             <span className="bg-blue-100 w-max mx-auto text-sm md:text-base px-3 py-1 rounded-full text-blue-600 font-medium capitalize">
-              {profile?.role}
+              {data?.role}
             </span>
             <span className="flex items-center gap-2">
               <svg
@@ -47,11 +47,11 @@ const ProfileClient = ({ data, role }: any) => {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              {profile?.email || "No email provided"}
+              {data?.email || "No email provided"}
             </span>
           </div>
         </div>
-        <ButtonEditProfile data={data} setProfile={setProfile} />
+        <ButtonEditProfile data={data} />
       </div>
 
       {/* Student Details */}
@@ -598,21 +598,21 @@ const ProfileClient = ({ data, role }: any) => {
           <div className="bg-gray-50 p-2 md:p-4 rounded-lg shadow-sm">
             <h3 className="font-medium mb-2 text-gray-800">ID Akun</h3>
             <div className="p-3 bg-white rounded-md text-gray-800">
-              {profile?.id}
+              {data?.id}
             </div>
           </div>
 
           <div className="bg-gray-50 p-2 md:p-4 rounded-lg shadow-sm">
             <h3 className="font-medium mb-2 text-gray-800">Username</h3>
             <div className="p-3 bg-white rounded-md text-gray-800">
-              {profile?.username || "Tidak ada"}
+              {data?.username || "Tidak ada"}
             </div>
           </div>
 
           <div className="bg-gray-50 p-2 md:p-4 rounded-lg shadow-sm">
             <h3 className="font-medium mb-2 text-gray-800">Tanggal Dibuat</h3>
             <div className="p-3 bg-white rounded-md text-gray-800">
-              {profile?.created_at
+              {data?.created_at
                 ? dayjs(data.created_at).format("DD MMMM YYYY")
                 : "Tidak ada"}
             </div>
@@ -623,7 +623,7 @@ const ProfileClient = ({ data, role }: any) => {
               Tanggal Diperbarui
             </h3>
             <div className="p-3 bg-white rounded-md text-gray-800">
-              {profile?.updated_at
+              {data?.updated_at
                 ? dayjs(data.updated_at).format("DD MMMM YYYY")
                 : "Tidak ada"}
             </div>

@@ -40,11 +40,10 @@ import { updateProfile } from "@/lib/actions/edit-profile";
 import Image from "next/image";
 
 interface IButtonEdit {
-  setProfile: any;
   data: ProfileSchema;
 }
 
-export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
+export default function ButtonEdit({ data }: IButtonEdit) {
   const [isUploading, setIsUploading] = useState(false);
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
@@ -82,37 +81,6 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
     }
   };
 
-  async function waitForImageWithPolling(
-    imageUrl: string,
-    maxRetries = 10,
-    interval = 1000
-  ) {
-    return new Promise((resolve) => {
-      let attempts = 0;
-      const checkImage = async () => {
-        try {
-          const response = await fetch(imageUrl, {
-            method: "HEAD",
-            cache: "no-cache",
-          });
-          if (response.ok) {
-            resolve(true);
-            return;
-          }
-        } catch (error) {
-          console.log(`Menunggu gambar tersedia... percobaan ${attempts + 1}`);
-        }
-        attempts++;
-        if (attempts >= maxRetries) {
-          resolve(false);
-          return;
-        }
-        setTimeout(checkImage, interval);
-      };
-      checkImage();
-    });
-  }
-
   async function onSubmit(values: ProfileSchema) {
     try {
       setIsUploading(true);
@@ -145,23 +113,6 @@ export default function ButtonEdit({ data, setProfile }: IButtonEdit) {
       );
 
       if (result.success?.status) {
-        // Tunggu hingga gambar tersedia di server
-        const imageUrl = `/uploads/${
-          imageProfile?.name
-        }?t=${new Date().getTime()}`;
-        const isImageAvailable = await waitForImageWithPolling(imageUrl);
-
-        if (isImageAvailable) {
-          setProfile((prev: { img: any }) => ({
-            ...prev,
-            img: imageUrl, // Tambahkan cache-busting timestamp
-          }));
-          toast.success("Gambar berhasil diperbarui!");
-        } else {
-          toast.success(result.success.message);
-          window.location.reload();
-        }
-
         setOpen(false);
       } else {
         toast.error(result.error.message);

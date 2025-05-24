@@ -6,6 +6,7 @@ const nextConfig = {
       { hostname: "res.cloudinary.com" },
       { hostname: "img.clerk.com" },
       { hostname: "sia.smakstpetrusende.sch.id" },
+      { hostname: "145.79.13.76" },
     ],
   },
 };

@@ -31,6 +31,7 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import ButtonBack from "../../ButtonBack";
 import FieldPasswordCustom from "../../ui/field-password-custom";
+import { baseIMAGEURL } from "@/lib/utils";
 
 export default function StudentFormUpdate({
   classes,
@@ -120,7 +121,7 @@ export default function StudentFormUpdate({
                     previewUrl
                       ? previewUrl
                       : defaultValues.img
-                      ? `/uploads/${defaultValues.img}`
+                      ? `${baseIMAGEURL}/${defaultValues.img}`
                       : "/avatar.png"
                   }
                   alt="Preview"

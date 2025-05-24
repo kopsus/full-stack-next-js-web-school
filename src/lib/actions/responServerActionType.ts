@@ -11,8 +11,8 @@ export type responServerAction = {
 };
 
 type responServerActionProps = {
-  statusSuccess: boolean;
-  statusError: boolean;
+  statusSuccess?: boolean;
+  statusError?: boolean;
   messageSuccess?: string;
   messageError?: string;
   data?: any;
