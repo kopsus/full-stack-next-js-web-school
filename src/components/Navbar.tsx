@@ -28,16 +28,13 @@ const Navbar = async () => {
     // Get student's class
     const student = await prisma.student.findUnique({
       where: { id: Number(session.id) },
-      include: { class: true }
+      include: { class: true },
     });
 
     // Get announcements that are either public (no classId) or specific to student's class
     announcements = await prisma.announcement.findMany({
       where: {
-        OR: [
-          { classId: null },
-          { classId: student?.classId }
-        ]
+        OR: [{ classId: null }, { classId: student?.classId }],
       },
       orderBy: {
         date: "desc",

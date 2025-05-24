@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { LogOutIcon } from "lucide-react";
 import { Admin, Student, Parent, Teacher } from "@prisma/client";
 import logout from "@/lib/actions/logout";
+import { baseIMAGEURL } from "@/lib/utils";
 
 interface UserButtonProps {
   dataUser: Admin | Teacher | Student | Parent;
@@ -37,7 +38,9 @@ export default function UserButton({ dataUser }: UserButtonProps) {
 
           <div className="h-8 w-8 cursor-pointer border-2 border-gray-300 rounded-full overflow-hidden">
             <Image
-              src={dataUser.img ? `/uploads/${dataUser.img}` : "/avatar.png"}
+              src={
+                dataUser.img ? `${baseIMAGEURL}/${dataUser.img}` : "/avatar.png"
+              }
               alt="profile"
               width={0}
               height={0}
