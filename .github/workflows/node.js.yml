@@ -1,0 +1,44 @@
+name: Deploy Frontend ke VPS
+
+on:
+  push:
+    branches:
+      - main # Jalankan hanya saat ada perubahan di branch "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kode dari GitHub
+        uses: actions/checkout@v4
+
+      - name: Deploy ke VPS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          PROJECT_DIR: "full-stack-school" # Sesuaikan dengan path proyek di VPS
+        run: |
+          # Setup SSH agar bisa login ke VPS
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Jalankan perintah di VPS untuk update aplikasi
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            
+            cd full-stack-web-pos
+            git pull origin main
+            # rm -rf .next
+
+            npm install
+            npm run build
+            pm2 restart 1
+            
+            echo "Deployment sukses!"
+          EOF
