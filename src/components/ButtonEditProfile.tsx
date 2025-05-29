@@ -242,7 +242,7 @@ export default function ButtonEdit({ data }: IButtonEdit) {
                     )}
                   />
 
-                  <FormItem>
+                  {/* <FormItem>
                     <FormLabel className="text-gray-700">
                       Password Baru
                     </FormLabel>
@@ -255,7 +255,7 @@ export default function ButtonEdit({ data }: IButtonEdit) {
                         placeholder="Kosongkan jika tidak ingin mengubah password"
                       />
                     </FormControl>
-                  </FormItem>
+                  </FormItem> */}
 
                   <FormField
                     control={form.control}
@@ -364,7 +364,7 @@ export default function ButtonEdit({ data }: IButtonEdit) {
                         <FormControl>
                           <Input
                             type="date"
-                            className="border-gray-300 focus:border-blue-500"
+                            className="border-gray-300 focus:border-blue-500 block"
                             {...field}
                             value={dayjs(field.value).format("YYYY-MM-DD")}
                             onChange={(e) =>

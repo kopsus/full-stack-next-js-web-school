@@ -53,7 +53,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-lamaSkyLight px-3">
+    <div className="relative h-screen flex flex-col items-center justify-center bg-lamaSkyLight px-3">
       <div className="flex justify-center mb-4">
         <Image src="/logo.png" alt="logo" width={112} height={112} />
       </div>
@@ -98,6 +98,10 @@ const LoginPage = () => {
             </Button>
           </form>
         </Form>
+      </div>
+      <div className="absolute bottom-0 right-0 space-y-2 bg-white p-5 shadow-md rounded-xl">
+        <p>username : admin</p>
+        <p>password : admin123</p>
       </div>
     </div>
   );
