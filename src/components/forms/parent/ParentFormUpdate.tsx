@@ -92,7 +92,7 @@ export default function ParentFormUpdate({
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm flex-1 m-4 mt-0 md:w-10/12">
+    <div className="bg-white p-6 rounded-lg shadow-sm flex-1 m-4 mt-0">
       <div className="flex flex-row justify-between items-center mb-6">
         <ButtonBack />
         <h1 className="font-bold text-sm md:text-base text-gray-900">
