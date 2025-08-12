@@ -101,7 +101,7 @@ const LoginPage = () => {
       </div>
       <div className="absolute bottom-0 right-0 space-y-2 bg-white p-5 shadow-md rounded-xl">
         <p>username : admin</p>
-        <p>password : admin123</p>
+        <p>password : password123</p>
       </div>
     </div>
   );
