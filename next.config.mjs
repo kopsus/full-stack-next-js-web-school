@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [{ hostname: "loempia-bom.putra-tunggal.my.id" }],
+    remotePatterns: [{ hostname: "petrus-ende.putra-tunggal.my.id" }],
   },
   experimental: {
     serverActions: {
