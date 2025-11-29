@@ -23,8 +23,6 @@ export default function UserButton({ dataUser }: UserButtonProps) {
     await logout();
   };
 
-  console.log("Data user navbar", dataUser);
-
   return (
     <Popover>
       <PopoverTrigger asChild>
