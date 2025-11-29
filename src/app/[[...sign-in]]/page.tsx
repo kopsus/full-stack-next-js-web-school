@@ -53,54 +53,62 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="relative h-screen flex flex-col items-center justify-center bg-lamaSkyLight px-3">
-      <div className="flex justify-center mb-4">
-        <Image src="/logo.png" alt="logo" width={112} height={112} />
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-lamaSkyLight px-3 gap-10">
+      <div>
+        <div className="flex justify-center mb-4">
+          <Image src="/logo.png" alt="logo" width={112} height={112} />
+        </div>
+        <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md md:w-[350px]">
+          <h1 className="text-2xl font-bold text-center mb-4">
+            Sistem Informasi Akademik
+          </h1>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="masukkan username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl className="mb-2">
+                      <InputPassword
+                        placeholder="masukkan password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="w-full mt-3 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </Form>
+        </div>
       </div>
-      <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md md:w-[350px]">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          Sistem Informasi Akademik
-        </h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="masukkan username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl className="mb-2">
-                    <InputPassword placeholder="masukkan password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              className="w-full mt-3 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Logging in..." : "Login"}
-            </Button>
-          </form>
-        </Form>
-      </div>
-      <div className="absolute bottom-0 right-0 space-y-2 bg-white p-5 shadow-md rounded-xl">
-        <p>username : admin</p>
+      <div className="space-y-1 bg-white p-5 shadow-md rounded-xl lg:absolute bottom-0 right-0">
+        <p>username (Admin) : admin</p>
+        <p>username (Teacher) : budi.guru</p>
+        <p>username (Parent) : ayah.andi</p>
+        <p>username (Student) : andi.siswa</p>
         <p>password : password123</p>
       </div>
     </div>
