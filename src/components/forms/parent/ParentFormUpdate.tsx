@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { parentSchema } from "@/lib/formValidationSchemas/parent";
 import { Upload } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { updateParent } from "@/lib/actions/parent";
 import Image from "next/image";

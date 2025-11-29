@@ -20,6 +20,8 @@ const ProfilePage = async () => {
     redirect("/");
   }
 
+  console.log("data user", data);
+
   return <ProfileClient data={data} role={role} />;
 };
 
