@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import { baseIMAGEURL } from "@/lib/utils";
 
 const ProfileClient = ({ data, role }: any) => {
+  console.log("data client", data?.image);
+
   return (
     <div className="p-4 flex flex-col gap-4 w-full md:w-10/12 mx-auto">
       {/* Profile Header */}
